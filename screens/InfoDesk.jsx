@@ -1,5 +1,7 @@
+import { Text } from "react-native";
+
 export default function InfoDesk() {
   return (
-    <div>InfoDesk</div>
+    <Text>InfoDesk</Text>
   )
 }

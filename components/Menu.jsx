@@ -14,7 +14,8 @@ export default function MenuBtn() {
   return (
     <Menu>
       <MenuTrigger
-        children={<MaterialIcons name="more-vert" size={24} color="black" />}
+        children={<MaterialIcons name="more-vert" size={24} color="white" />}
+        customStyles={{ triggerOuterWrapper: { marginRight: 5 } }}
       />
       <MenuOptions>
         <MenuOption

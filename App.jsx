@@ -10,6 +10,7 @@ import Report from "./screens/Report";
 import Settings from "./screens/Settings";
 import MenuBtn from "./components/Menu";
 import { Colors } from "./constants/colors";
+import InfoDesk from "./screens/InfoDesk";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -25,21 +26,13 @@ function BottomNavigator() {
             height: 60,
             backgroundColor: Colors.primary400,
           },
+          headerStyle: { backgroundColor: Colors.primary400 },
+          headerTintColor: "white",
           headerTitle: "Neighborhood Watch",
           headerRight: () => <MenuBtn />,
-          tabBarActiveTintColor: 'white'
+          tabBarActiveTintColor: "white",
         }}
       >
-        <Tab.Screen
-          name="Articles"
-          component={Articles}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <MaterialIcons name="article" size={size} color={color} />
-            ),
-            tabBarLabelStyle: { fontSize: 14 },
-          }}
-        />
         <Tab.Screen
           name="Report"
           component={Report}
@@ -51,8 +44,19 @@ function BottomNavigator() {
           }}
         />
         <Tab.Screen
+          name="Articles"
+          component={Articles}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <MaterialIcons name="article" size={size} color={color} />
+            ),
+            tabBarLabelStyle: { fontSize: 14 },
+          }}
+        />
+
+        <Tab.Screen
           name="InfoDesk"
-          component={Report}
+          component={InfoDesk}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="info" size={size} color={color} />
@@ -78,7 +82,7 @@ function BottomNavigator() {
 export default function App() {
   return (
     <>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
