@@ -1,31 +1,36 @@
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
 
-const UploadBtn = ({ onPress }) => {
+const UploadBtn = ({ children, onPress }) => {
   return (
-    <TouchableOpacity
-      style={({ pressed }) => pressed && styles.pressed}
-      onPress={onPress}
-    >
-      <View style={styles.btnWrapper}>
+    <View style={styles.btnOuterWrapper}>
+      <Pressable style={styles.btnWrapper} onPress={onPress}>
         <Text style={styles.btnText}>Upload Image/Video</Text>
-      </View>
-    </TouchableOpacity>
+      </Pressable>
+      {children}
+    </View>
   );
 };
 
 export default UploadBtn;
 
 const styles = StyleSheet.create({
-  btnWrapper: {
-    backgroundColor: "black",
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+  btnOuterWrapper: {
     marginTop: 22,
+    backgroundColor: "#ebf3f3",
+    width: "80%",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderRadius: 6,
+  },
+  btnWrapper: {
+    width: "100%",
   },
   btnText: {
-    color: "white",
+    color: "#585861",
     fontWeight: "800",
+    textAlign: "center",
+    textDecorationStyle: "solid",
+    textDecorationLine: "underline",
   },
   pressed: {
     opacity: 0.8,

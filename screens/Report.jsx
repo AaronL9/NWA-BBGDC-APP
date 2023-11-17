@@ -2,25 +2,49 @@ import { Text, TextInput, View, StyleSheet, Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 import * as DocumentPicker from "expo-document-picker";
+import { ref, uploadBytes } from "firebase/storage";
+import { storage } from "../config/firebase";
 
 import { Colors } from "../constants/colors";
 import UploadBtn from "../components/UploadBtn";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import FileNamePreview from "../components/FileNamePreview";
 
 export default function Report() {
-  const [imageUri, setImageUri] = useState();
+  const [files, setFiles] = useState([]);
+
   const pickSomething = async () => {
     try {
       const docRes = await DocumentPicker.getDocumentAsync({
         type: ["image/*", "video/*"],
+        multiple: true,
       });
 
-      console.log(docRes);
-      setImageUri(docRes.assets[0].uri);
+      const assets = docRes.assets;
+      if (!docRes.canceled) setFiles((prev) => prev.concat(assets));
     } catch (error) {
       console.log("Error while selecting file: ", error);
     }
   };
+
+  const uploadFile = async (uri, name) => {
+    const file = await fetch(uri);
+    const blob = await file.blob();
+
+    const storageRef = ref(storage, `images/${name}`);
+    uploadBytes(storageRef, blob).then((snapshot) => {
+      console.log("Uploaded a blob or file!");
+    });
+  };
+
+  const removeFileHanlder = (indexId) => {
+    console.log(indexId);
+    setFiles((prev) => prev.filter((_, index) => index !== indexId));
+  };
+
+  useEffect(() => {
+    console.log(files);
+  }, [files]);
 
   return (
     <>
@@ -42,20 +66,26 @@ export default function Report() {
           <TextInput
             style={[styles.inputStyle, styles.textarea]}
             multiline={true}
-            numberOfLines={10}
+            numberOfLines={8}
             selectTextOnFocus={true}
             editable
             placeholder="Desciprtion (optional)"
           />
           <TextInput style={[styles.inputStyle]} placeholder="Location" />
         </View>
-        <UploadBtn onPress={pickSomething} />
-        {imageUri && (
-          <Image
-            style={{ width: 100, height: 100 }}
-            source={{ uri: imageUri }}
-          />
-        )}
+        <UploadBtn onPress={pickSomething}>
+          {files.length !== 0 && (
+            <View style={styles.filePreview}>
+              {files.map((file, index) => (
+                <FileNamePreview
+                  key={index}
+                  fileName={file.name}
+                  onPress={() => removeFileHanlder(index)}
+                />
+              ))}
+            </View>
+          )}
+        </UploadBtn>
       </View>
     </>
   );
@@ -94,5 +124,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     textAlignVertical: "top",
   },
-  dropdownStyle: {},
+  filePreview: {
+    marginTop: 20,
+  },
 });
