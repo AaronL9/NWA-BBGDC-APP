@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Text,
   TextInput,
@@ -7,43 +8,38 @@ import {
   Button,
 } from "react-native";
 
-import { MaterialIcons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import SelectDropdown from "react-native-select-dropdown";
-import * as DocumentPicker from "expo-document-picker";
+import { MaterialIcons } from "@expo/vector-icons";
 import { ref, uploadBytes } from "firebase/storage";
-import { storage } from "../config/firebase";
 
+import {
+  pickMedia,
+  launchCamera,
+  launchVideoCamera,
+} from "../util/mediaPicker";
+import { storage } from "../config/firebase";
 import { Colors } from "../constants/colors";
-import { useEffect, useState } from "react";
-import FileNamePreview from "../components/FileNamePreview";
 import Uploads from "../components/Uploads";
+import OutlinedButton from "../components/OutlinedButton";
+import { extractFilename } from "../util/stringFormatter";
 
 export default function Report() {
   const [files, setFiles] = useState([]);
-
-  const pickSomething = async () => {
-    try {
-      const docRes = await DocumentPicker.getDocumentAsync({
-        type: ["image/*", "video/*"],
-        multiple: true,
-      });
-
-      const assets = docRes.assets;
-      if (!docRes.canceled) setFiles((prev) => prev.concat(assets));
-    } catch (error) {
-      console.log("Error while selecting file: ", error);
-    }
-  };
+  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
 
   const uploadFile = async () => {
-    const uploadPromises = files.map(async ({ uri, name }) => {
+    const uploadPromises = files.map(async ({ uri }) => {
+      const filename = extractFilename(uri);
       const file = await fetch(uri);
       const blob = await file.blob();
 
-      const storageRef = ref(storage, `images/${name}`);
+      const storageRef = ref(storage, `images/${filename}`);
 
       return uploadBytes(storageRef, blob);
     });
+
+    console.log(status);
 
     try {
       const snapshots = await Promise.all(uploadPromises);
@@ -62,10 +58,6 @@ export default function Report() {
     console.log(indexId);
     setFiles((prev) => prev.filter((_, index) => index !== indexId));
   };
-
-  useEffect(() => {
-    console.log(files);
-  }, [files]);
 
   return (
     <ScrollView style={styles.scrollContainer}>
@@ -94,19 +86,27 @@ export default function Report() {
           />
           <TextInput style={[styles.inputStyle]} placeholder="Location" />
         </View>
-        <Uploads onPress={pickSomething}>
-          {files.length !== 0 && (
-            <View style={styles.filePreview}>
-              {files.map((file, index) => (
-                <FileNamePreview
-                  key={index}
-                  fileName={file.name}
-                  onPress={() => removeFileHanlder(index)}
-                />
-              ))}
-            </View>
-          )}
-        </Uploads>
+        <View style={styles.mediaButtonsContainer}>
+          <OutlinedButton
+            icon={"videocam-outline"}
+            onPress={launchVideoCamera.bind(this, setFiles)}
+          >
+            Take a Video
+          </OutlinedButton>
+          <OutlinedButton
+            icon={"camera-outline"}
+            onPress={launchCamera.bind(this, setFiles)}
+          >
+            Take an Image
+          </OutlinedButton>
+          <OutlinedButton
+            icon={"attach"}
+            onPress={pickMedia.bind(this, setFiles)}
+          >
+            Attach Images/Videos
+          </OutlinedButton>
+        </View>
+        <Uploads files={files} onRemove={removeFileHanlder} />
         <Button title="Submit" onPress={uploadFile} />
       </View>
     </ScrollView>
@@ -115,7 +115,8 @@ export default function Report() {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    backgroundColor: 'white'
+    flex: 1,
+    backgroundColor: "white",
   },
   reportContainer: {
     flex: 1,
@@ -123,6 +124,13 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     backgroundColor: "white",
     alignItems: "center",
+    // borderWidth: 5,
+  },
+  mediaButtonsContainer: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    marginTop: 25,
   },
   title: {
     fontSize: 28,
@@ -148,8 +156,5 @@ const styles = StyleSheet.create({
     // paddingBottom: 100,
     alignItems: "flex-start",
     textAlignVertical: "top",
-  },
-  filePreview: {
-    marginTop: 20,
   },
 });

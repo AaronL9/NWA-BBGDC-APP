@@ -5,3 +5,8 @@ export function limitStringLength(inputString, maxLength) {
     return inputString.substring(0, maxLength - 3) + "...";
   }
 }
+
+export const extractFilename = (uri) => {
+   const pathArray = uri.split("/");
+   return pathArray[pathArray.length - 1];
+ };
