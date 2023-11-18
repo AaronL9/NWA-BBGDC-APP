@@ -1,8 +1,8 @@
 import { Text, View, StyleSheet, Pressable } from "react-native";
 
-const UploadBtn = ({ children, onPress }) => {
+const Uploads = ({ children, onPress }) => {
   return (
-    <View style={styles.btnOuterWrapper}>
+    <View style={styles.uploadContainer}>
       <Pressable style={styles.btnWrapper} onPress={onPress}>
         <Text style={styles.btnText}>Upload Image/Video</Text>
       </Pressable>
@@ -11,10 +11,10 @@ const UploadBtn = ({ children, onPress }) => {
   );
 };
 
-export default UploadBtn;
+export default Uploads;
 
 const styles = StyleSheet.create({
-  btnOuterWrapper: {
+  uploadContainer: {
     marginTop: 22,
     backgroundColor: "#ebf3f3",
     width: "80%",

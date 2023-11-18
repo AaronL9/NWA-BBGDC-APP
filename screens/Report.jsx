@@ -1,4 +1,12 @@
-import { Text, TextInput, View, StyleSheet, Image } from "react-native";
+import {
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+  ScrollView,
+  Button,
+} from "react-native";
+
 import { MaterialIcons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 import * as DocumentPicker from "expo-document-picker";
@@ -6,9 +14,9 @@ import { ref, uploadBytes } from "firebase/storage";
 import { storage } from "../config/firebase";
 
 import { Colors } from "../constants/colors";
-import UploadBtn from "../components/UploadBtn";
 import { useEffect, useState } from "react";
 import FileNamePreview from "../components/FileNamePreview";
+import Uploads from "../components/Uploads";
 
 export default function Report() {
   const [files, setFiles] = useState([]);
@@ -27,14 +35,27 @@ export default function Report() {
     }
   };
 
-  const uploadFile = async (uri, name) => {
-    const file = await fetch(uri);
-    const blob = await file.blob();
+  const uploadFile = async () => {
+    const uploadPromises = files.map(async ({ uri, name }) => {
+      const file = await fetch(uri);
+      const blob = await file.blob();
 
-    const storageRef = ref(storage, `images/${name}`);
-    uploadBytes(storageRef, blob).then((snapshot) => {
-      console.log("Uploaded a blob or file!");
+      const storageRef = ref(storage, `images/${name}`);
+
+      return uploadBytes(storageRef, blob);
     });
+
+    try {
+      const snapshots = await Promise.all(uploadPromises);
+
+      console.log("All uploads complete!");
+      setFiles([]);
+      snapshots.forEach((snapshot) => {
+        console.log("File uploaded:", snapshot.metadata.name);
+      });
+    } catch (error) {
+      console.error("Error uploading files:", error);
+    }
   };
 
   const removeFileHanlder = (indexId) => {
@@ -47,8 +68,8 @@ export default function Report() {
   }, [files]);
 
   return (
-    <>
-      <View style={styles.rootContainer}>
+    <ScrollView style={styles.scrollContainer}>
+      <View style={styles.reportContainer}>
         <Text style={styles.title}>Report</Text>
         <View style={styles.inputContainer}>
           <SelectDropdown
@@ -73,7 +94,7 @@ export default function Report() {
           />
           <TextInput style={[styles.inputStyle]} placeholder="Location" />
         </View>
-        <UploadBtn onPress={pickSomething}>
+        <Uploads onPress={pickSomething}>
           {files.length !== 0 && (
             <View style={styles.filePreview}>
               {files.map((file, index) => (
@@ -85,17 +106,21 @@ export default function Report() {
               ))}
             </View>
           )}
-        </UploadBtn>
+        </Uploads>
+        <Button title="Submit" onPress={uploadFile} />
       </View>
-    </>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  rootContainer: {
+  scrollContainer: {
+    backgroundColor: 'white'
+  },
+  reportContainer: {
+    flex: 1,
     padding: 12,
     paddingTop: 30,
-    flex: 1,
     backgroundColor: "white",
     alignItems: "center",
   },
