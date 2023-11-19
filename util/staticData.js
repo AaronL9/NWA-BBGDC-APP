@@ -1,0 +1,1 @@
+export const offense = ["Assualt", "Robbery", "Sexual Harrasment", "Others"]

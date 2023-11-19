@@ -2,13 +2,13 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { limitStringLength } from "../util/stringFormatter";
 
-const FileNamePreview = ({ fileName, onPress }) => {
+const FileNamePreview = ({ fileName, onPress, fileType }) => {
   return (
     <View style={styles.rootContainer}>
       <Pressable onPress={onPress}>
         <Ionicons name="close-circle-outline" size={24} color="white" />
       </Pressable>
-      <Text style={styles.text}>{limitStringLength(fileName, 25)}</Text>
+      <Text style={styles.text}>{limitStringLength(fileName, 20)}.{fileType}</Text>
     </View>
   );
 };

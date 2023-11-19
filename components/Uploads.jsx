@@ -12,6 +12,7 @@ const Uploads = ({ files, onRemove }) => {
             <FileNamePreview
               key={index}
               fileName={extractFilename(file.uri)}
+              fileType={file.type}
               onPress={() => onRemove(index)}
             />
           ))}

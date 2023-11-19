@@ -1,47 +1,57 @@
 import { useEffect, useState } from "react";
-import {
-  Text,
-  TextInput,
-  View,
-  StyleSheet,
-  ScrollView,
-  Button,
-} from "react-native";
+import { Text, TextInput, View, StyleSheet, ScrollView } from "react-native";
 
-import * as ImagePicker from "expo-image-picker";
 import SelectDropdown from "react-native-select-dropdown";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "../config/firebase";
+import {
+  collection,
+  addDoc,
+} from "firebase/firestore";
 
 import {
   pickMedia,
   launchCamera,
   launchVideoCamera,
 } from "../util/mediaPicker";
-import { storage } from "../config/firebase";
 import { Colors } from "../constants/colors";
 import Uploads from "../components/Uploads";
 import OutlinedButton from "../components/OutlinedButton";
 import { extractFilename } from "../util/stringFormatter";
+import SubmitButton from "../components/SubmitButton";
+import { offense } from "../util/staticData";
 
 export default function Report() {
   const [files, setFiles] = useState([]);
-  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+  const [reports, setReports] = useState({
+    offense: "",
+    description: "",
+    location: "",
+  });
+
+  const onChangeHandler = (inputIdentifier, enteredValue) => {
+    setReports((currentValue) => {
+      return {
+        ...currentValue,
+        [inputIdentifier]: enteredValue,
+      };``
+    });
+  };
 
   const uploadFile = async () => {
-    const uploadPromises = files.map(async ({ uri }) => {
-      const filename = extractFilename(uri);
-      const file = await fetch(uri);
-      const blob = await file.blob();
-
-      const storageRef = ref(storage, `images/${filename}`);
-
-      return uploadBytes(storageRef, blob);
-    });
-
-    console.log(status);
-
     try {
+      const docRef = await addDoc(collection(db, "reports"), reports);
+      const uploadPromises = files.map(async ({ uri }) => {
+        const filename = extractFilename(uri);
+        const file = await fetch(uri);
+        const blob = await file.blob();
+
+        const storageRef = ref(storage, `reports/${docRef.id}/${filename}`);
+
+        return uploadBytes(storageRef, blob);
+      });
+
       const snapshots = await Promise.all(uploadPromises);
 
       console.log("All uploads complete!");
@@ -59,14 +69,17 @@ export default function Report() {
     setFiles((prev) => prev.filter((_, index) => index !== indexId));
   };
 
+  // useEffect(() => {
+  //   console.log(reports);
+  // }, [reports]);
+
   return (
     <ScrollView style={styles.scrollContainer}>
       <View style={styles.reportContainer}>
         <Text style={styles.title}>Report</Text>
         <View style={styles.inputContainer}>
           <SelectDropdown
-            defaultValue={"1"}
-            data={["1", "2", "3"]}
+            data={offense}
             buttonStyle={[styles.inputStyle, styles.dropdownStyle]}
             renderDropdownIcon={() => (
               <MaterialIcons
@@ -75,6 +88,7 @@ export default function Report() {
                 color="black"
               />
             )}
+            onSelect={(selectedItem) => onChangeHandler('offense', selectedItem)}
           />
           <TextInput
             style={[styles.inputStyle, styles.textarea]}
@@ -83,8 +97,13 @@ export default function Report() {
             selectTextOnFocus={true}
             editable
             placeholder="Desciprtion (optional)"
+            onChangeText={onChangeHandler.bind(this, "description")}
           />
-          <TextInput style={[styles.inputStyle]} placeholder="Location" />
+          <TextInput
+            style={[styles.inputStyle]}
+            placeholder="Location"
+            onChangeText={onChangeHandler.bind(this, "location")}
+          />
         </View>
         <View style={styles.mediaButtonsContainer}>
           <OutlinedButton
@@ -107,7 +126,7 @@ export default function Report() {
           </OutlinedButton>
         </View>
         <Uploads files={files} onRemove={removeFileHanlder} />
-        <Button title="Submit" onPress={uploadFile} />
+        <SubmitButton onPress={uploadFile} />
       </View>
     </ScrollView>
   );
