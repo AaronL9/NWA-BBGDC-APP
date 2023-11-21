@@ -8,9 +8,12 @@ import { MenuProvider } from "react-native-popup-menu";
 import Articles from "./screens/Articles";
 import Report from "./screens/Report";
 import Settings from "./screens/Settings";
-import MenuBtn from "./components/Menu";
-import { Colors } from "./constants/colors";
 import InfoDesk from "./screens/InfoDesk";
+import MenuBtn from "./components/Menu";
+import Login from "./screens/Login";
+import { Colors } from "./constants/colors";
+import Signup from "./screens/Signup.jsx";
+import AuthContextProvider from "./context/authContext.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -82,17 +85,29 @@ function BottomNavigator() {
 export default function App() {
   return (
     <>
-      <StatusBar style="light" />
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
+      <StatusBar style="dark" />
+      <AuthContextProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Signup"
+              component={Signup}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{ headerShown: false }}
+            />
+            {/* <Stack.Screen
             name="BottomNav"
             component={BottomNavigator}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Settings" component={Settings} />
-        </Stack.Navigator>
-      </NavigationContainer>
+          <Stack.Screen name="Settings" component={Settings} /> */}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AuthContextProvider>
     </>
   );
 }
