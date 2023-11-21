@@ -57,10 +57,14 @@ export const credentialFieldProps = (setCredential) => {
 };
 
 const onChangeValueHandler = (identifier, setCredential, enteredText) => {
+  const value = identifier.includes("assword")
+        ? enteredText
+        : enteredText.trim()
+  
   setCredential((prev) => {
     return {
       ...prev,
-      [identifier]: enteredText,
+      [identifier]: value,
     };
   });
 };

@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Text, TextInput, View, StyleSheet, ScrollView } from "react-native";
-
-import SelectDropdown from "react-native-select-dropdown";
 import { MaterialIcons } from "@expo/vector-icons";
+import SelectDropdown from "react-native-select-dropdown";
+import { Colors } from "../constants/colors";
+
+// firebase
 import { ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../config/firebase";
 import {
@@ -10,17 +12,21 @@ import {
   addDoc,
 } from "firebase/firestore";
 
+// native feature
 import {
   pickMedia,
   launchCamera,
   launchVideoCamera,
 } from "../util/mediaPicker";
-import { Colors } from "../constants/colors";
+
+// util
+import { offense } from "../util/staticData";
+import { extractFilename } from "../util/stringFormatter";
+
+// components
 import Uploads from "../components/Uploads";
 import OutlinedButton from "../components/OutlinedButton";
-import { extractFilename } from "../util/stringFormatter";
 import SubmitButton from "../components/SubmitButton";
-import { offense } from "../util/staticData";
 
 export default function Report() {
   const [files, setFiles] = useState([]);
@@ -35,7 +41,7 @@ export default function Report() {
       return {
         ...currentValue,
         [inputIdentifier]: enteredValue,
-      };``
+      };
     });
   };
 

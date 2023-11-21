@@ -1,6 +1,12 @@
+import { Alert } from "react-native";
 import { createContext, useState, useEffect } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth } from "../config/firebase";
+import { db } from "../config/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 export const AuthContext = createContext({
   user: {},
@@ -13,21 +19,43 @@ function AuthContextProvider({ children }) {
   const [user, setUser] = useState();
   const [loading, setLoading] = useState();
 
-  async function signup(email, password) {
+  async function signup(credential) {
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
-        email,
-        password
+        credential.email,
+        credential.password
       );
-      console.log(userCredential.user);
+      const uid = userCredential.user.uid;
+      const { email, firstName, lastName, contactNum } = credential;
+      const userData = {
+        uid,
+        email,
+        firstName,
+        lastName,
+        contactNum,
+      };
+      const user = await addDoc(collection(db, "users"), userData);
+      setUser(userData)
+      
     } catch (error) {
-      console.log(error.code, error.message);
+      let errorMessage = "Failed to sign you up";
+
+      if (error.message.includes("email-already-in-use")) {
+        errorMessage = "Email already in use";
+      }
+
+      Alert.alert("Signup Failed", errorMessage);
     }
   }
 
-  function login(email, password) {
-    return auth.signInWithEmailAndPassword(email, password);
+  async function login({ email, password }) {
+    try {
+      const user = await signInWithEmailAndPassword(auth, email, password);
+      console.log(user);
+    } catch (error) {
+      console.log(error.code, error.message);
+    }
   }
 
   function logout() {
@@ -38,11 +66,11 @@ function AuthContextProvider({ children }) {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
       setLoading(false);
-      console.log(user);
+      console.log("user:", user);
     });
 
     return unsubscribe;
-  }, []);
+  }, [user]);
 
   const value = {
     user,

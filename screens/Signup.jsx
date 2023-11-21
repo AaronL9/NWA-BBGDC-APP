@@ -1,57 +1,91 @@
-import { View, StyleSheet, Text } from "react-native";
-import CredentialField from "../components/CredentialField";
+import { useContext, useEffect, useState } from "react";
+import { View, StyleSheet, Text, StatusBar, ScrollView } from "react-native";
+import { Octicons } from "@expo/vector-icons";
+import { AuthContext } from "../context/authContext";
+import { Colors } from "../constants/colors";
+import { useNavigation } from "@react-navigation/native";
+
+// utils
 import {
   credentialFieldProps,
   signUpInitValue,
 } from "../util/credentialFieldProps";
-import { useContext, useEffect, useState } from "react";
-import AuthButton from "../components/AuthButton";
-import { AuthContext } from "../context/authContext";
 import { validateSignUpForm } from "../util/formValidation";
-import { Octicons } from "@expo/vector-icons";
-import { Colors } from "../constants/colors";
+
+// components
+import CredentialField from "../components/CredentialField";
+import AuthButton from "../components/AuthButton";
+import Header from "../components/Header";
 
 const Signup = () => {
+  const navigation = useNavigation();
   const [credential, setCredential] = useState(signUpInitValue);
-  const [isFormValid, setIsFormValid] = useState(false);
   const [errors, setErrors] = useState({});
 
   const authCtx = useContext(AuthContext);
 
   const signUpHanlder = async () => {
-    validateSignUpForm(credential, setErrors, setIsFormValid);
-    if (isFormValid) {
-      authCtx.signup(credential.email, credential.password);
+    const isValid = validateSignUpForm(credential, setErrors);
+    if (isValid) {
+      authCtx.signup(credential);
       return;
     }
-    alert("invalid form");
   };
 
+  useEffect(() => {}, [credential]);
+
   return (
-    <View style={styles.loginContainer}>
-      <View style={styles.rowContainer}>
-        <CredentialField {...credentialFieldProps(setCredential).firstName} />
-        <CredentialField {...credentialFieldProps(setCredential).lastName} />
-      </View>
-      <View style={styles.stackContainer}>
-        <CredentialField {...credentialFieldProps(setCredential).email} />
-        <CredentialField {...credentialFieldProps(setCredential).phone} />
-        <CredentialField {...credentialFieldProps(setCredential).passowrd} />
-        <CredentialField
-          {...credentialFieldProps(setCredential).confirmPassword}
+    <View style={styles.rootContainer}>
+      <ScrollView>
+        <Header
+          customStyle={styles.headerSytle}
+          imageStyle={styles.headerImage}
         />
-      </View>
-      <AuthButton onPress={signUpHanlder} />
-      <View style={styles.errorsContainer}>
-        {Object.values(errors).map((error, index) => (
-          <View style={styles.error}>
-            <Octicons name="dot-fill" size={16} color={Colors.errorBullet} />
-            <Text key={index} style={styles.errorText}>
-              {error}
-            </Text>
+        <View style={styles.loginContainer}>
+          <View style={styles.rowContainer}>
+            <CredentialField
+              {...credentialFieldProps(setCredential).firstName}
+            />
+            <CredentialField
+              {...credentialFieldProps(setCredential).lastName}
+            />
           </View>
-        ))}
-      </View>
+          <View style={styles.stackContainer}>
+            <CredentialField {...credentialFieldProps(setCredential).email} />
+            <CredentialField {...credentialFieldProps(setCredential).phone} />
+            <CredentialField
+              {...credentialFieldProps(setCredential).passowrd}
+            />
+            <CredentialField
+              {...credentialFieldProps(setCredential).confirmPassword}
+            />
+          </View>
+          {Object.keys(errors).length !== 0 && (
+            <View style={styles.errorsContainer}>
+              {Object.values(errors).map((error, index) => (
+                <View key={index} style={styles.error}>
+                  <Octicons
+                    name="dot-fill"
+                    size={16}
+                    color={Colors.errorBullet}
+                  />
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+          <AuthButton title={"Signup"} onPress={signUpHanlder} />
+          <Text style={{ color: "white" }}>
+            Already have an account?{" "}
+            <Text
+              style={styles.loginLink}
+              onPress={() => navigation.navigate("Login")}
+            >
+              Login
+            </Text>
+          </Text>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -59,10 +93,24 @@ const Signup = () => {
 export default Signup;
 
 const styles = StyleSheet.create({
-  loginContainer: {
+  rootContainer: {
+    paddingTop: StatusBar.currentHeight + 25,
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: Colors.bgPrimaary400,
+  },
+  headerSytle: {
     justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 15,
+  },
+  headerImage: {
+    width: 100,
+    height: 100,
+  },
+  loginContainer: {
+    flex: 5,
+    justifyContent: "start",
     alignItems: "center",
   },
   rowContainer: {
@@ -83,6 +131,7 @@ const styles = StyleSheet.create({
     gap: 5,
     padding: 12,
     borderRadius: 6,
+    marginTop: 12,
   },
   error: {
     flexDirection: "row",
@@ -91,5 +140,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: Colors.errorText,
+  },
+  loginLink: {
+    color: Colors.accent,
   },
 });

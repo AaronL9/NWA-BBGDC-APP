@@ -1,43 +1,91 @@
-import { View, StyleSheet, TextInput } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import {
+  View,
+  StyleSheet,
+  StatusBar,
+  Text,
+  ScrollView,
+} from "react-native";
+import { useContext, useState } from "react";
+import CredentialField from "../components/CredentialField";
+import { credentialFieldProps } from "../util/credentialFieldProps";
+import AuthButton from "../components/AuthButton";
+import { AuthContext } from "../context/authContext";
 import { Colors } from "../constants/colors";
+import { useNavigation } from "@react-navigation/native";
+import Header from "../components/Header";
+
+
+let headerSize;
 
 export default function Login() {
+  const authCtx = useContext(AuthContext);
+  const navigation = useNavigation();
+
+  const [credential, setCredential] = useState({
+    email: "",
+    passowrd: "",
+  });
+
+  const loginInHandler = async () => {
+    authCtx.login(credential);
+  };
+
   return (
-    <View style={styles.loginContainer}>
-      <View style={[styles.inputContainerStyle]}>
-        <MaterialIcons name="mail" size={24} color={Colors.primary400} />
-        <TextInput style={styles.inputStyle} placeholder="Email" />
-      </View>
-      <View style={[styles.inputContainerStyle]}>
-        <MaterialIcons name="lock" size={24} color={Colors.primary400} />
-        <TextInput style={styles.inputStyle} placeholder="Password" />
-      </View>
+    <View style={styles.rootContainer}>
+      <ScrollView>
+        <Header customStyle={styles.headerStyle} imageStyle={styles.headerImage} />
+        <View style={styles.loginContainer}>
+          <View style={styles.inputContainerStyle}>
+            <CredentialField {...credentialFieldProps(setCredential).email} />
+            <CredentialField
+              {...credentialFieldProps(setCredential).passowrd}
+            />
+          </View>
+          <AuthButton title={"Login"} onPress={loginInHandler} />
+          <Text style={{ color: "white" }}>
+            Don't have an account?{" "}
+            <Text
+              style={styles.signUpLink}
+              onPress={() => navigation.navigate('Signup')}
+            >
+              Sign up
+            </Text>
+          </Text>
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  loginContainer: {
+  rootContainer: {
+    paddingTop: StatusBar.currentHeight + 25,
     flex: 1,
     backgroundColor: "white",
+    backgroundColor: Colors.bgPrimaary400,
+  },
+  headerStyle: {
     justifyContent: "center",
     alignItems: "center",
   },
+  headerImage: {
+    width: 200,
+    height: 200,
+  },
+  loginContainer: {
+    flex: 1,
+    justifyContent: "start",
+    alignItems: "center",
+    // borderWidth: 2,
+  },
   inputContainerStyle: {
     width: "80%",
-    marginTop: 16,
-    borderRadius: 6,
-    flexDirection: 'row',
-    borderBottomWidth: 2,
-    paddingHorizontal: 5,
-    paddingVertical: 5,
-    gap: 5,
-    borderBottomColor: Colors.primary400,
-    backgroundColor: "#f6f6f6",
   },
   inputStyle: {
     flex: 1,
     // borderWidth: 2,
-  }
+  },
+  signUpLink: {
+    color: Colors.accent,
+  },
 });

@@ -13,6 +13,7 @@ const CredentialField = ({
     <View style={[styles.inputContainerStyle, customStyle]}>
       <MaterialIcons name={icon} size={24} color={Colors.primary400} />
       <TextInput
+        autoCapitalize="none"
         secureTextEntry={isPassword}
         style={styles.inputStyle}
         placeholder={placeholder}
