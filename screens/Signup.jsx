@@ -1,22 +1,31 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import CredentialField from "../components/CredentialField";
 import {
   credentialFieldProps,
   signUpInitValue,
 } from "../util/credentialFieldProps";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AuthButton from "../components/AuthButton";
 import { AuthContext } from "../context/authContext";
-
+import { validateSignUpForm } from "../util/formValidation";
+import { Octicons } from "@expo/vector-icons";
+import { Colors } from "../constants/colors";
 
 const Signup = () => {
   const [credential, setCredential] = useState(signUpInitValue);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  const authCtx = useContext(AuthContext)
+  const authCtx = useContext(AuthContext);
 
   const signUpHanlder = async () => {
-    authCtx.signup(credential.email, credential.password)
-  }
+    validateSignUpForm(credential, setErrors, setIsFormValid);
+    if (isFormValid) {
+      authCtx.signup(credential.email, credential.password);
+      return;
+    }
+    alert("invalid form");
+  };
 
   return (
     <View style={styles.loginContainer}>
@@ -33,6 +42,16 @@ const Signup = () => {
         />
       </View>
       <AuthButton onPress={signUpHanlder} />
+      <View style={styles.errorsContainer}>
+        {Object.values(errors).map((error, index) => (
+          <View style={styles.error}>
+            <Octicons name="dot-fill" size={16} color={Colors.errorBullet} />
+            <Text key={index} style={styles.errorText}>
+              {error}
+            </Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 };
@@ -57,5 +76,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     width: "80%",
+  },
+  errorsContainer: {
+    width: "80%",
+    backgroundColor: Colors.errorsContainer,
+    gap: 5,
+    padding: 12,
+    borderRadius: 6,
+  },
+  error: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+  errorText: {
+    color: Colors.errorText,
   },
 });
