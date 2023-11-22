@@ -1,5 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useContext } from "react";
 import { Alert } from "react-native";
 
 import {
@@ -8,8 +9,11 @@ import {
   MenuOption,
   MenuTrigger,
 } from "react-native-popup-menu";
+import { AuthContext } from "../context/authContext";
 
 export default function MenuBtn() {
+  const authCtx = useContext(AuthContext);
+
   const navigation = useNavigation();
   return (
     <Menu>
@@ -23,7 +27,7 @@ export default function MenuBtn() {
           text="Settings"
         />
         <MenuOption
-          onSelect={() => Alert.alert("logout", "You have been logout")}
+          onSelect={authCtx.logout}
           text="Logout"
         />
       </MenuOptions>

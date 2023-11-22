@@ -1,16 +1,14 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Text, TextInput, View, StyleSheet, ScrollView } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 import { Colors } from "../constants/colors";
+import { AuthContext } from "../context/authContext";
 
 // firebase
 import { ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import {
-  collection,
-  addDoc,
-} from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 
 // native feature
 import {
@@ -29,6 +27,8 @@ import OutlinedButton from "../components/OutlinedButton";
 import SubmitButton from "../components/SubmitButton";
 
 export default function Report() {
+  const { currentUser } = useContext(AuthContext);
+
   const [files, setFiles] = useState([]);
   const [reports, setReports] = useState({
     offense: "",
@@ -53,7 +53,10 @@ export default function Report() {
         const file = await fetch(uri);
         const blob = await file.blob();
 
-        const storageRef = ref(storage, `reports/${docRef.id}/${filename}`);
+        const storageRef = ref(
+          storage,
+          `reports/${currentUser.uid}/${docRef.id}/${filename}`
+        );
 
         return uploadBytes(storageRef, blob);
       });
@@ -94,7 +97,9 @@ export default function Report() {
                 color="black"
               />
             )}
-            onSelect={(selectedItem) => onChangeHandler('offense', selectedItem)}
+            onSelect={(selectedItem) =>
+              onChangeHandler("offense", selectedItem)
+            }
           />
           <TextInput
             style={[styles.inputStyle, styles.textarea]}

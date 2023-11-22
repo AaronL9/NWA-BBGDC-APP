@@ -1,21 +1,15 @@
-import {
-  View,
-  StyleSheet,
-  StatusBar,
-  Text,
-  ScrollView,
-} from "react-native";
+import { View, StyleSheet, StatusBar, Text, ScrollView } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { useContext, useState } from "react";
-import CredentialField from "../components/CredentialField";
 import { credentialFieldProps } from "../util/credentialFieldProps";
-import AuthButton from "../components/AuthButton";
 import { AuthContext } from "../context/authContext";
 import { Colors } from "../constants/colors";
-import { useNavigation } from "@react-navigation/native";
+
+// components
+import CredentialField from "../components/CredentialField";
+import AuthButton from "../components/AuthButton";
 import Header from "../components/Header";
-
-
-let headerSize;
+import Loader from "../components/global/Loader";
 
 export default function Login() {
   const authCtx = useContext(AuthContext);
@@ -33,7 +27,10 @@ export default function Login() {
   return (
     <View style={styles.rootContainer}>
       <ScrollView>
-        <Header customStyle={styles.headerStyle} imageStyle={styles.headerImage} />
+        <Header
+          customStyle={styles.headerStyle}
+          imageStyle={styles.headerImage}
+        />
         <View style={styles.loginContainer}>
           <View style={styles.inputContainerStyle}>
             <CredentialField {...credentialFieldProps(setCredential).email} />
@@ -46,13 +43,14 @@ export default function Login() {
             Don't have an account?{" "}
             <Text
               style={styles.signUpLink}
-              onPress={() => navigation.navigate('Signup')}
+              onPress={() => navigation.navigate("Signup")}
             >
               Sign up
             </Text>
           </Text>
         </View>
       </ScrollView>
+      {authCtx.authenticating && <Loader />}
     </View>
   );
 }

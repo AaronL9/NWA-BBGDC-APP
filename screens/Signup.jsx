@@ -16,13 +16,14 @@ import { validateSignUpForm } from "../util/formValidation";
 import CredentialField from "../components/CredentialField";
 import AuthButton from "../components/AuthButton";
 import Header from "../components/Header";
+import Loader from "../components/global/Loader";
 
 const Signup = () => {
+  const authCtx = useContext(AuthContext);
   const navigation = useNavigation();
+
   const [credential, setCredential] = useState(signUpInitValue);
   const [errors, setErrors] = useState({});
-
-  const authCtx = useContext(AuthContext);
 
   const signUpHanlder = async () => {
     const isValid = validateSignUpForm(credential, setErrors);
@@ -86,6 +87,7 @@ const Signup = () => {
           </Text>
         </View>
       </ScrollView>
+      {authCtx.authenticating &&<Loader />}
     </View>
   );
 };
