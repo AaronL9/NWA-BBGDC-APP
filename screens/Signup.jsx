@@ -87,7 +87,7 @@ const Signup = () => {
           </Text>
         </View>
       </ScrollView>
-      {authCtx.authenticating &&<Loader />}
+      {authCtx.authenticating && <Loader />}
     </View>
   );
 };
@@ -114,9 +114,11 @@ const styles = StyleSheet.create({
     flex: 5,
     justifyContent: "start",
     alignItems: "center",
+    alignSelf: 'center',
+    width: "80%",
+    // borderWidth: 2,
   },
   rowContainer: {
-    width: "80%",
     flexDirection: "row",
     justifyContent: "space-around",
     gap: 16,
@@ -125,10 +127,9 @@ const styles = StyleSheet.create({
   stackContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    width: "80%",
   },
   errorsContainer: {
-    width: "80%",
+    width: "100%",
     backgroundColor: Colors.errorsContainer,
     gap: 5,
     padding: 12,

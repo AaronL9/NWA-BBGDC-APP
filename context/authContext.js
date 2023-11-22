@@ -8,6 +8,7 @@ import {
 import { auth } from "../config/firebase";
 import { db } from "../config/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import { validateLoginForm } from "../util/formValidation";
 
 export const AuthContext = createContext({
   currentUser: null,
@@ -16,12 +17,14 @@ export const AuthContext = createContext({
   logout: () => {},
   isAuthenticated: false,
   authenticating: false,
+  authError: null,
 });
 
 function AuthContextProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authenticating, setAuthenticating] = useState(false);
+  const [authError, setAuthError] = useState(null)
 
   async function signup(credential) {
     setAuthenticating(true);
@@ -57,25 +60,25 @@ function AuthContextProvider({ children }) {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      console.log(error.code, error.message);
+      setAuthenticating(false);
+      console.log(error.code)
+      setAuthError(validateLoginForm(error.code))
     }
-    setAuthenticating(false);
   }
 
   async function logout() {
     try {
-      const data = await signOut(auth);
-      setCurrentUser(null);
+      await signOut(auth);
     } catch (error) {
       console.log(error.code, error.message);
     }
   }
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       setCurrentUser(user);
       setLoading(false);
-      // console.log("user:", user);
+      // console.log(user)
     });
 
     return unsubscribe;
@@ -88,6 +91,7 @@ function AuthContextProvider({ children }) {
     logout,
     authenticating,
     isAuthenticated: !!currentUser,
+    authError
   };
 
   return (

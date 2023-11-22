@@ -10,6 +10,7 @@ import CredentialField from "../components/CredentialField";
 import AuthButton from "../components/AuthButton";
 import Header from "../components/Header";
 import Loader from "../components/global/Loader";
+import ErrorLoginMessage from "../components/auth/ErrorLoginMessage";
 
 export default function Login() {
   const authCtx = useContext(AuthContext);
@@ -26,7 +27,7 @@ export default function Login() {
 
   return (
     <View style={styles.rootContainer}>
-      <ScrollView>
+      <ScrollView style={{width: '100%'}}>
         <Header
           customStyle={styles.headerStyle}
           imageStyle={styles.headerImage}
@@ -38,6 +39,9 @@ export default function Login() {
               {...credentialFieldProps(setCredential).passowrd}
             />
           </View>
+          {authCtx.authError && (
+            <ErrorLoginMessage message={authCtx.authError} />
+          )}
           <AuthButton title={"Login"} onPress={loginInHandler} />
           <Text style={{ color: "white" }}>
             Don't have an account?{" "}
@@ -61,6 +65,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     backgroundColor: Colors.bgPrimaary400,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerStyle: {
     justifyContent: "center",
@@ -74,10 +80,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "start",
     alignItems: "center",
+    alignSelf: 'center',
+    width: '80%',
     // borderWidth: 2,
-  },
-  inputContainerStyle: {
-    width: "80%",
   },
   inputStyle: {
     flex: 1,

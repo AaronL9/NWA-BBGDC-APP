@@ -34,3 +34,14 @@ export const validateSignUpForm = (values, setErrors) => {
   setErrors(errors);
   return Object.keys(errors).length === 0;
 };
+
+export const validateLoginForm = (errorCode) => {
+  switch (errorCode) {
+    case "auth/invalid-login-credentials":
+      return "Invalid login credentials";
+    case "auth/invalid-email":
+      return "Invalid Email";
+    case "auth/missing-password":
+      return "Missing password";
+  }
+};
