@@ -20,8 +20,8 @@ export const AuthContext = createContext({
 
 function AuthContextProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [authenticating, setAuthenticating] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [authenticating, setAuthenticating] = useState(false);
 
   async function signup(credential) {
     setAuthenticating(true);
