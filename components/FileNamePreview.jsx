@@ -17,7 +17,6 @@ export default FileNamePreview;
 
 const styles = StyleSheet.create({
   rootContainer: {
-    marginTop: 5,
     backgroundColor: "grey",
     borderRadius: 8,
     flexDirection: "row",

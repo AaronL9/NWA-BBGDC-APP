@@ -1,11 +1,21 @@
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { Colors } from "../constants/colors";
 
-const SubmitButton = ({ onPress }) => {
+const SubmitButton = ({ onPress, uploading }) => {
   return (
-    <Pressable onPress={onPress} style={{ width: "80%" }}>
+    <Pressable disabled={uploading} onPress={onPress} style={{ width: "80%" }}>
       <View style={styles.submitButtonContainer}>
-        <Text style={styles.buttonText}>SUBMIT</Text>
+        {uploading ? (
+          <ActivityIndicator color="white" size="small" />
+        ) : (
+          <Text style={styles.buttonText}>SUBMIT</Text>
+        )}
       </View>
     </Pressable>
   );

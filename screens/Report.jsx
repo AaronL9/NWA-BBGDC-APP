@@ -1,5 +1,12 @@
 import { useContext, useState } from "react";
-import { Text, TextInput, View, StyleSheet, ScrollView } from "react-native";
+import {
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
 import { Colors } from "../constants/colors";
@@ -26,15 +33,19 @@ import Uploads from "../components/Uploads";
 import OutlinedButton from "../components/OutlinedButton";
 import SubmitButton from "../components/SubmitButton";
 
+const initValue = {
+  offense: "",
+  description: "",
+  location: "",
+};
+
 export default function Report() {
   const { currentUser } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [files, setFiles] = useState([]);
-  const [reports, setReports] = useState({
-    offense: "",
-    description: "",
-    location: "",
-  });
+  const [reports, setReports] = useState(initValue);
 
   const onChangeHandler = (inputIdentifier, enteredValue) => {
     setReports((currentValue) => {
@@ -46,6 +57,7 @@ export default function Report() {
   };
 
   const uploadFile = async () => {
+    setIsUploading(true);
     try {
       const docRef = await addDoc(collection(db, "reports"), reports);
       const uploadPromises = files.map(async ({ uri }) => {
@@ -63,14 +75,16 @@ export default function Report() {
 
       const snapshots = await Promise.all(uploadPromises);
 
-      console.log("All uploads complete!");
+      Alert.alert("Succesfull", "Your report has been submitted");
+      setReports(initValue);
       setFiles([]);
       snapshots.forEach((snapshot) => {
         console.log("File uploaded:", snapshot.metadata.name);
       });
     } catch (error) {
-      console.error("Error uploading files:", error);
+      Alert.alert("Error uploading files", error);
     }
+    setIsUploading(false);
   };
 
   const removeFileHanlder = (indexId) => {
@@ -88,6 +102,7 @@ export default function Report() {
         <Text style={styles.title}>Report</Text>
         <View style={styles.inputContainer}>
           <SelectDropdown
+            defaultValue={reports.offense}
             data={offense}
             buttonStyle={[styles.inputStyle, styles.dropdownStyle]}
             renderDropdownIcon={() => (
@@ -102,6 +117,7 @@ export default function Report() {
             }
           />
           <TextInput
+            value={reports.description}
             style={[styles.inputStyle, styles.textarea]}
             multiline={true}
             numberOfLines={8}
@@ -111,6 +127,7 @@ export default function Report() {
             onChangeText={onChangeHandler.bind(this, "description")}
           />
           <TextInput
+            value={reports.location}
             style={[styles.inputStyle]}
             placeholder="Location"
             onChangeText={onChangeHandler.bind(this, "location")}
@@ -119,25 +136,29 @@ export default function Report() {
         <View style={styles.mediaButtonsContainer}>
           <OutlinedButton
             icon={"videocam-outline"}
-            onPress={launchVideoCamera.bind(this, setFiles)}
+            onPress={launchVideoCamera.bind(this, setFiles, setIsLoading)}
           >
             Take a Video
           </OutlinedButton>
           <OutlinedButton
             icon={"camera-outline"}
-            onPress={launchCamera.bind(this, setFiles)}
+            onPress={launchCamera.bind(this, setFiles, setIsLoading)}
           >
             Take an Image
           </OutlinedButton>
           <OutlinedButton
             icon={"attach"}
-            onPress={pickMedia.bind(this, setFiles)}
+            onPress={pickMedia.bind(this, setFiles, setIsLoading)}
           >
             Attach Images/Videos
           </OutlinedButton>
         </View>
-        <Uploads files={files} onRemove={removeFileHanlder} />
-        <SubmitButton onPress={uploadFile} />
+        <Uploads
+          files={files}
+          onRemove={removeFileHanlder}
+          isLoading={isLoading}
+        />
+        <SubmitButton onPress={uploadFile} uploading={isUploading} />
       </View>
     </ScrollView>
   );

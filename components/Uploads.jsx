@@ -1,12 +1,12 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
 
 import FileNamePreview from "./FileNamePreview";
 import { extractFilename } from "../util/stringFormatter";
 
-const Uploads = ({ files, onRemove }) => {
+const Uploads = ({ files, onRemove, isLoading }) => {
   return (
     <View style={styles.uploadContainer}>
-      {files.length !== 0 ? (
+      {files.length !== 0 && (
         <View style={styles.filePreview}>
           {files.map((file, index) => (
             <FileNamePreview
@@ -17,9 +17,9 @@ const Uploads = ({ files, onRemove }) => {
             />
           ))}
         </View>
-      ) : (
-        <Text>No Images/Videos</Text>
       )}
+      {(files.length === 0 && !isLoading) && <Text>No image/videos attach</Text>}
+      {isLoading && <ActivityIndicator size="small" color="black" />}
     </View>
   );
 };
@@ -35,4 +35,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingVertical: 8,
   },
+  filePreview: {
+    gap: 5,
+  }
 });

@@ -38,10 +38,11 @@ const verifyMediaLibrary = async () => {
   return true;
 };
 
-export const pickMedia = async (setFiles) => {
+export const pickMedia = async (setFiles, setIsLoading) => {
   const permission = await verifyMediaLibrary();
   if (!permission) return;
-  
+
+  setIsLoading(true);
   try {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -50,44 +51,51 @@ export const pickMedia = async (setFiles) => {
       selectionLimit: 3,
     });
 
-    if (!result.canceled) setFiles((prev) => prev.concat(result.assets));
+    if (!result.canceled) {
+      setFiles((prev) => prev.concat(result.assets));
+    }
   } catch (error) {
-    console.log(permission)
+    console.log(permission);
     console.log("Error while selecting file: ", error);
   }
+  setIsLoading(false);
 };
 
-export const launchVideoCamera = async (setFiles) => {
+export const launchVideoCamera = async (setFiles, setIsLoading) => {
   const permission = await verifyCameraPermission();
-
   if (!permission) return;
 
+  setIsLoading(true);
   try {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
       quality: 0,
     });
 
-    if (!result.canceled) setFiles(result.assets);
+    if (!result.canceled) setFiles((prev) => prev.concat(result.assets));
   } catch (error) {
     console.log("Error while taking a video: ", error);
   }
+  setIsLoading(false);
 };
 
-export const launchCamera = async (setFiles) => {
+export const launchCamera = async (setFiles, setIsLoading) => {
   const permission = await verifyCameraPermission();
 
   if (!permission) return;
+
+  setIsLoading(true);
   try {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
-      quality: 0,
+      quality: 1,
     });
 
     if (!result.canceled) setFiles((prev) => prev.concat(result.assets));
   } catch (error) {
     console.log("Error while taking a picture: ", error);
   }
+  setIsLoading(false);
 };
 
 export const pickFiles = async (setFiles) => {
