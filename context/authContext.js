@@ -60,10 +60,10 @@ function AuthContextProvider({ children }) {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      setAuthenticating(false);
       console.log(error.code)
       setAuthError(validateLoginForm(error.code))
     }
+    setAuthenticating(false);
   }
 
   async function logout() {
