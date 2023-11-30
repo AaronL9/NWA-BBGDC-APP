@@ -9,7 +9,11 @@ import { Colors } from "../constants/colors";
 
 const SubmitButton = ({ onPress, uploading }) => {
   return (
-    <Pressable disabled={uploading} onPress={onPress} style={{ width: "80%" }}>
+    <Pressable
+      disabled={uploading}
+      onPress={onPress}
+      style={({ pressed }) => [{ width: "80%" }, pressed && styles.pressed]}
+    >
       <View style={styles.submitButtonContainer}>
         {uploading ? (
           <ActivityIndicator color="white" size="small" />
@@ -27,12 +31,15 @@ const styles = StyleSheet.create({
   submitButtonContainer: {
     backgroundColor: Colors.primary400,
     width: "100%",
-    paddingVertical: 6,
+    paddingVertical: 10,
     paddingHorizontal: 4,
     borderRadius: 8,
   },
   buttonText: {
     color: "white",
     textAlign: "center",
+  },
+  pressed: {
+    opacity: 0.5,
   },
 });

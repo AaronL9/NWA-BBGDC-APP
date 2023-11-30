@@ -5,6 +5,7 @@ import { MenuProvider } from "react-native-popup-menu";
 import { Colors } from "../constants/colors";
 
 import Articles from "../screens/Articles";
+import ArticleView from "../screens/ArticleView";
 import Report from "../screens/Report";
 import Settings from "../screens/Settings";
 import InfoDesk from "../screens/InfoDesk";
@@ -86,6 +87,7 @@ const Home = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="ArticleView" component={ArticleView} />
     </Stack.Navigator>
   );
 };

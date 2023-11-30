@@ -15,7 +15,7 @@ import { AuthContext } from "../context/authContext";
 // firebase
 import { ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 // native feature
 import {
@@ -40,7 +40,7 @@ const initValue = {
 };
 
 export default function Report() {
-  const { currentUser } = useContext(AuthContext);
+  const { userData } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -59,7 +59,12 @@ export default function Report() {
   const uploadFile = async () => {
     setIsUploading(true);
     try {
-      const docRef = await addDoc(collection(db, "reports"), reports);
+      const docRef = await addDoc(collection(db, "reports"), {
+        ...reports,
+        reporteeName: `${userData.firstName} ${userData.lastName}`,
+        contactNum: userData.contactNum,
+        createdAt: serverTimestamp(),
+      });
       const uploadPromises = files.map(async ({ uri }) => {
         const filename = extractFilename(uri);
         const file = await fetch(uri);
@@ -67,7 +72,7 @@ export default function Report() {
 
         const storageRef = ref(
           storage,
-          `reports/${currentUser.uid}/${docRef.id}/${filename}`
+          `reports/${userData.uid}/${docRef.id}/${filename}`
         );
 
         return uploadBytes(storageRef, blob);
@@ -75,7 +80,7 @@ export default function Report() {
 
       const snapshots = await Promise.all(uploadPromises);
 
-      Alert.alert("Succesfull", "Your report has been submitted");
+      Alert.alert("Succesful", "Your report has been submitted");
       setReports(initValue);
       setFiles([]);
       snapshots.forEach((snapshot) => {
