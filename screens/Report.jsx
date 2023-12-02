@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Button,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
@@ -32,11 +33,12 @@ import { extractFilename } from "../util/stringFormatter";
 import Uploads from "../components/Uploads";
 import OutlinedButton from "../components/OutlinedButton";
 import SubmitButton from "../components/SubmitButton";
+import { getLocationHandler } from "../util/location";
+import GetLocationButton from "../components/GetLocationButton";
 
 const initValue = {
   offense: "",
   description: "",
-  location: "",
 };
 
 export default function Report() {
@@ -46,6 +48,9 @@ export default function Report() {
 
   const [files, setFiles] = useState([]);
   const [reports, setReports] = useState(initValue);
+  const [address, setAddress] = useState("");
+  const [coords, setCoords] = useState({ lat: 0, long: 0 });
+  console.log("Data: ", address);
 
   const onChangeHandler = (inputIdentifier, enteredValue) => {
     setReports((currentValue) => {
@@ -131,11 +136,12 @@ export default function Report() {
             placeholder="Desciprtion (optional)"
             onChangeText={onChangeHandler.bind(this, "description")}
           />
+          <GetLocationButton setAddress={setAddress} setCoords={setCoords} testing={"testing"}/>
           <TextInput
-            value={reports.location}
+            value={address}
             style={[styles.inputStyle]}
             placeholder="Location"
-            onChangeText={onChangeHandler.bind(this, "location")}
+            onChangeText={(value) => setAddress(value)}
           />
         </View>
         <View style={styles.mediaButtonsContainer}>
@@ -207,6 +213,8 @@ const styles = StyleSheet.create({
     width: "80%",
     marginTop: 16,
     paddingHorizontal: 5,
+    paddingVertical: 8,
+    fontSize: 18,
   },
   textarea: {
     // paddingBottom: 100,
