@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import { Colors } from "../constants/colors";
+import { Colors } from "../../constants/colors";
 
 function OutlinedButton({ onPress, icon, children }) {
   return (
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: Colors.primary400,
-    width: '80%',
+    width: "80%",
   },
   pressed: {
     opacity: 0.7,

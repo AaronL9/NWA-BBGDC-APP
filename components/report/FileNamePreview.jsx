@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { limitStringLength } from "../util/stringFormatter";
+import { limitStringLength } from "../../util/stringFormatter";
 
 const FileNamePreview = ({ fileName, onPress, fileType }) => {
   return (

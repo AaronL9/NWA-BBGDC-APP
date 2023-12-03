@@ -1,10 +1,13 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { Colors } from "../constants/colors";
+import { Colors } from "../../constants/colors";
 
 const AuthButton = ({ title, onPress }) => {
   return (
     <Pressable
-      style={({ pressed }) => [styles.buttonWrapper, pressed && styles.feedback]}
+      style={({ pressed }) => [
+        styles.buttonWrapper,
+        pressed && styles.feedback,
+      ]}
       onPress={onPress}
     >
       <View>
@@ -22,7 +25,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingVertical: 8,
     marginVertical: 16,
-    width: '100%',
+    width: "100%",
   },
   buttonText: {
     color: "white",

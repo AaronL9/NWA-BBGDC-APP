@@ -13,8 +13,8 @@ import {
 import { validateSignUpForm } from "../util/formValidation";
 
 // components
-import CredentialField from "../components/CredentialField";
-import AuthButton from "../components/AuthButton";
+import CredentialField from "../components/auth/CredentialField";
+import AuthButton from "../components/auth/AuthButton";
 import Header from "../components/Header";
 import Loader from "../components/global/Loader";
 
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     flex: 5,
     justifyContent: "start",
     alignItems: "center",
-    alignSelf: 'center',
+    alignSelf: "center",
     width: "80%",
     // borderWidth: 2,
   },

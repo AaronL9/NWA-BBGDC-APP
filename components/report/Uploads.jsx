@@ -1,7 +1,7 @@
 import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
 
 import FileNamePreview from "./FileNamePreview";
-import { extractFilename } from "../util/stringFormatter";
+import { extractFilename } from "../../util/stringFormatter";
 
 const Uploads = ({ files, onRemove, isLoading }) => {
   return (
@@ -18,7 +18,7 @@ const Uploads = ({ files, onRemove, isLoading }) => {
           ))}
         </View>
       )}
-      {(files.length === 0 && !isLoading) && <Text>No image/videos attach</Text>}
+      {files.length === 0 && !isLoading && <Text>No image/videos attach</Text>}
       {isLoading && <ActivityIndicator size="small" color="black" />}
     </View>
   );
@@ -37,5 +37,5 @@ const styles = StyleSheet.create({
   },
   filePreview: {
     gap: 5,
-  }
+  },
 });

@@ -5,7 +5,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
-import { Colors } from "../constants/colors";
+import { Colors } from "../../constants/colors";
 
 const SubmitButton = ({ onPress, uploading }) => {
   return (

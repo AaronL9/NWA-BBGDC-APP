@@ -6,7 +6,6 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-  Button,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import SelectDropdown from "react-native-select-dropdown";
@@ -16,7 +15,11 @@ import { AuthContext } from "../context/authContext";
 // firebase
 import { ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
 // native feature
 import {
@@ -30,11 +33,10 @@ import { offense } from "../util/staticData";
 import { extractFilename } from "../util/stringFormatter";
 
 // components
-import Uploads from "../components/Uploads";
-import OutlinedButton from "../components/OutlinedButton";
-import SubmitButton from "../components/SubmitButton";
-import { getLocationHandler } from "../util/location";
-import GetLocationButton from "../components/GetLocationButton";
+import Uploads from "../components/report/Uploads";
+import OutlinedButton from "../components/report/OutlinedButton";
+import SubmitButton from "../components/report/SubmitButton";
+import LocationField from "../components/report/LocationField";
 
 const initValue = {
   offense: "",
@@ -50,7 +52,6 @@ export default function Report() {
   const [reports, setReports] = useState(initValue);
   const [address, setAddress] = useState("");
   const [coords, setCoords] = useState({ lat: 0, long: 0 });
-  console.log("Data: ", address);
 
   const onChangeHandler = (inputIdentifier, enteredValue) => {
     setReports((currentValue) => {
@@ -68,7 +69,9 @@ export default function Report() {
         ...reports,
         reporteeName: `${userData.firstName} ${userData.lastName}`,
         contactNum: userData.contactNum,
-        createdAt: serverTimestamp(),
+        date: serverTimestamp(),
+        geoPoint: coords,
+        location: address,
       });
       const uploadPromises = files.map(async ({ uri }) => {
         const filename = extractFilename(uri);
@@ -77,7 +80,7 @@ export default function Report() {
 
         const storageRef = ref(
           storage,
-          `reports/${userData.uid}/${docRef.id}/${filename}`
+          `reports/${docRef.id}/${filename}`
         );
 
         return uploadBytes(storageRef, blob);
@@ -88,6 +91,7 @@ export default function Report() {
       Alert.alert("Succesful", "Your report has been submitted");
       setReports(initValue);
       setFiles([]);
+      setAddress('')
       snapshots.forEach((snapshot) => {
         console.log("File uploaded:", snapshot.metadata.name);
       });
@@ -98,13 +102,8 @@ export default function Report() {
   };
 
   const removeFileHanlder = (indexId) => {
-    console.log(indexId);
     setFiles((prev) => prev.filter((_, index) => index !== indexId));
   };
-
-  // useEffect(() => {
-  //   console.log(reports);
-  // }, [reports]);
 
   return (
     <ScrollView style={styles.scrollContainer}>
@@ -136,12 +135,10 @@ export default function Report() {
             placeholder="Desciprtion (optional)"
             onChangeText={onChangeHandler.bind(this, "description")}
           />
-          <GetLocationButton setAddress={setAddress} setCoords={setCoords} testing={"testing"}/>
-          <TextInput
-            value={address}
-            style={[styles.inputStyle]}
-            placeholder="Location"
-            onChangeText={(value) => setAddress(value)}
+          <LocationField
+            setAddress={setAddress}
+            setCoords={setCoords}
+            address={address}
           />
         </View>
         <View style={styles.mediaButtonsContainer}>

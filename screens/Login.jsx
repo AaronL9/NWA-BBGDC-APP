@@ -6,8 +6,8 @@ import { AuthContext } from "../context/authContext";
 import { Colors } from "../constants/colors";
 
 // components
-import CredentialField from "../components/CredentialField";
-import AuthButton from "../components/AuthButton";
+import CredentialField from "../components/auth/CredentialField";
+import AuthButton from "../components/auth/AuthButton";
 import Header from "../components/Header";
 import Loader from "../components/global/Loader";
 import ErrorLoginMessage from "../components/auth/ErrorLoginMessage";
@@ -27,7 +27,7 @@ export default function Login() {
 
   return (
     <View style={styles.rootContainer}>
-      <ScrollView style={{width: '100%'}}>
+      <ScrollView style={{ width: "100%" }}>
         <Header
           customStyle={styles.headerStyle}
           imageStyle={styles.headerImage}
@@ -65,8 +65,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     backgroundColor: Colors.bgPrimaary400,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerStyle: {
     justifyContent: "center",
@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "start",
     alignItems: "center",
-    alignSelf: 'center',
-    width: '80%',
+    alignSelf: "center",
+    width: "80%",
     // borderWidth: 2,
   },
   inputStyle: {
