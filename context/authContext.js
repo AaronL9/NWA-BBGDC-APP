@@ -77,15 +77,20 @@ function AuthContextProvider({ children }) {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       setCurrentUser(user);
-      try {
-        const q = query(collection(db, "users"), where("uid", "==", user.uid));
-        const querySnapshot = await getDocs(q);
-        setUserData(querySnapshot.docs[0].data());
-      } catch (error) {
-        console.log(error)
-      }
+      if (user)
+        try {
+          const q = query(
+            collection(db, "users"),
+            where("uid", "==", user.uid)
+          );
+          const querySnapshot = await getDocs(q);
+          setUserData(querySnapshot.docs[0].data());
+        } catch (error) {
+          console.log(error);
+        }
+      else setUserData(null);
+
       setLoading(false);
-      console.log(userData);
     });
 
     return unsubscribe;

@@ -35,18 +35,16 @@ export async function getLocationHandler(setCoords, setAddress) {
   const lng = location.coords.longitude;
   setCoords({ lat, lng });
 
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch Address!");
+  try {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    const address = data.results[0].formatted_address;
+    setAddress(String(address));
+    if (!response.ok) {
+      throw new Error("Failed to fetch Address!");
+    }
+  } catch (error) {
+    console.log(error)
   }
-
-  const data = await response.json();
-  const address = data.results[0].formatted_address;
-  setAddress(String(address));
-}
-
-export async function getAddress(lat, lng) {
-  return String(address);
 }

@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { View, StyleSheet, Text, StatusBar, ScrollView } from "react-native";
 import { Octicons } from "@expo/vector-icons";
-import { AuthContext } from "../context/authContext";
-import { Colors } from "../constants/colors";
 import { useNavigation } from "@react-navigation/native";
+import { Colors } from "../constants/colors";
+import { AuthContext } from "../context/authContext";
 
 // utils
 import {
@@ -80,7 +80,7 @@ const Signup = () => {
             Already have an account?{" "}
             <Text
               style={styles.loginLink}
-              onPress={() => navigation.navigate("Login")}
+              onPress={() => navigation.replace("Login")}
             >
               Login
             </Text>

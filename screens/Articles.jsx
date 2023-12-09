@@ -2,7 +2,7 @@ import { Text, StyleSheet, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 
 // firebase
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 // components

@@ -47,7 +47,7 @@ export default function Login() {
             Don't have an account?{" "}
             <Text
               style={styles.signUpLink}
-              onPress={() => navigation.navigate("Signup")}
+              onPress={() => navigation.replace("Signup")}
             >
               Sign up
             </Text>

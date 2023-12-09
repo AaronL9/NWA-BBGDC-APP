@@ -1,15 +1,28 @@
-import { StyleSheet, Text, Pressable, View, TextInput } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  Pressable,
+  View,
+  TextInput,
+  ActivityIndicator,
+} from "react-native";
 import { getLocationHandler } from "../../util/location";
 import { Colors } from "../../constants/colors";
+import { useState } from "react";
 
 const LocationField = ({ setAddress, setCoords, address }) => {
+  
+  const [loading, setLoading] = useState(false);
   const getAddressHanlder = async () => {
+    setLoading(true);
     await getLocationHandler(setCoords, setAddress);
+    setLoading(false);
   };
+
   return (
     <View style={styles.container}>
       <Pressable onPress={getAddressHanlder}>
-        <Text style={styles.textColor}>Use Current location</Text>
+        <Text style={styles.pressableText}>Use Current location</Text>
       </Pressable>
       <TextInput
         value={address}
@@ -17,6 +30,9 @@ const LocationField = ({ setAddress, setCoords, address }) => {
         placeholder="Location"
         onChangeText={(value) => setAddress(value)}
       />
+      {loading && (
+        <ActivityIndicator style={styles.loader} size="small" color="black" />
+      )}
     </View>
   );
 };
@@ -29,8 +45,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
     // borderWidth: 2,
   },
-  textColor: {
+  pressableText: {
     color: Colors.primary200,
+    fontSize: 20,
   },
   inputStyle: {
     backgroundColor: "#f6f6f6",
@@ -42,5 +59,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 18,
     marginTop: 6,
+  },
+  loader: {
+    position: "absolute",
+    right: 0,
+    left: 0,
+    top: 35,
+    bottom: 0,
   },
 });
