@@ -1,4 +1,5 @@
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
+
 export const formatTimestamp = (timestamp) => {
   if (
     !timestamp ||

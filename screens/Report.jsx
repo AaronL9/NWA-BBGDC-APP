@@ -15,11 +15,7 @@ import { AuthContext } from "../context/authContext";
 // firebase
 import { ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 // native feature
 import {
@@ -72,16 +68,14 @@ export default function Report() {
         date: serverTimestamp(),
         geoPoint: coords,
         location: address,
+        status: "report",
       });
       const uploadPromises = files.map(async ({ uri }) => {
         const filename = extractFilename(uri);
         const file = await fetch(uri);
         const blob = await file.blob();
 
-        const storageRef = ref(
-          storage,
-          `reports/${docRef.id}/${filename}`
-        );
+        const storageRef = ref(storage, `reports/${docRef.id}/${filename}`);
 
         return uploadBytes(storageRef, blob);
       });
@@ -91,7 +85,7 @@ export default function Report() {
       Alert.alert("Succesful", "Your report has been submitted");
       setReports(initValue);
       setFiles([]);
-      setAddress('')
+      setAddress("");
       snapshots.forEach((snapshot) => {
         console.log("File uploaded:", snapshot.metadata.name);
       });

@@ -3,27 +3,39 @@ import { useEffect, useState } from "react";
 
 // firebase
 import { collection, getDocs, onSnapshot } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db } from "../../config/firebase.js";
 
 // components
-import ArticleCard from "../components/ArticleCard.jsx";
+import ArticleCard from "../../components/ArticleCard.jsx";
+import { Colors } from "../../constants/colors.js";
 
 export default function Articles() {
   const [articles, setArticles] = useState([]);
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      const querySnapshot = await getDocs(collection(db, "articles"));
-      const data = [];
-      querySnapshot.forEach((doc) => {
-        const obj = doc.data();
-        obj.id = doc.id;
-        data.push(obj);
+    const fetchArticles = () => {
+      const articlesCollection = collection(db, "articles");
+
+      const unsubscribe = onSnapshot(articlesCollection, (querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          const obj = doc.data();
+          obj.id = doc.id;
+          data.push(obj);
+        });
+
+        setArticles(data);
       });
-      setArticles(data);
+      return unsubscribe;
     };
-    fetchArticles();
+
+    const unsubscribe = fetchArticles();
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
   return (
     <>
       <FlatList
@@ -33,6 +45,7 @@ export default function Articles() {
             title={item.title}
             timestamp={item.createdAt}
             body={item.body}
+            imageUrl={item.imageUrl[0]}
           />
         )}
         keyExtractor={(item) => item.id}
@@ -46,6 +59,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     marginTop: 10,
+    marginBottom: 16,
+    marginLeft: 10,
     // borderWidth: 2
+    borderBottomWidth: 2,
+    borderBottomColor: Colors.primary400,
+    width: 65,
   },
 });

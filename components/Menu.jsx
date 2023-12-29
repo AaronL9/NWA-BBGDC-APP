@@ -1,8 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useContext } from "react";
-import { Alert } from "react-native";
-
 import {
   Menu,
   MenuOptions,

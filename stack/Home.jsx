@@ -4,11 +4,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { MenuProvider } from "react-native-popup-menu";
 import { Colors } from "../constants/colors";
 
-import Articles from "../screens/Articles";
-import ArticleView from "../screens/ArticleView";
+import Articles from "../screens/articles/Articles";
+import ArticleView from "../screens/articles/ArticleView";
 import Report from "../screens/Report";
 import Settings from "../screens/Settings";
-import InfoDesk from "../screens/InfoDesk";
+import InfoDesk from "../screens/info_desk/InfoDesk";
 import MenuBtn from "../components/Menu";
 
 const Tab = createBottomTabNavigator();
@@ -63,7 +63,7 @@ const BottomNavigator = () => {
             tabBarLabelStyle: { fontSize: 14 },
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="Training"
           component={Settings}
           options={{
@@ -72,7 +72,7 @@ const BottomNavigator = () => {
             ),
             tabBarLabelStyle: { fontSize: 14 },
           }}
-        />
+        /> */}
       </Tab.Navigator>
     </MenuProvider>
   );
@@ -80,7 +80,12 @@ const BottomNavigator = () => {
 
 const Home = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerTintColor: "white",
+        headerStyle: { backgroundColor: Colors.primary400 },
+      }}
+    >
       <Stack.Screen
         name="BottomNav"
         component={BottomNavigator}
