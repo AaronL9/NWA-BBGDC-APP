@@ -1,17 +1,31 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { Colors } from "../../constants/colors";
+import { useContext } from "react";
+import { AuthContext } from "../../context/authContext";
 
 const AuthButton = ({ title, onPress }) => {
+  const { authenticating } = useContext(AuthContext);
   return (
     <Pressable
       style={({ pressed }) => [
         styles.buttonWrapper,
-        pressed && styles.feedback,
+        pressed && !authenticating && styles.feedback,
       ]}
       onPress={onPress}
+      disabled={authenticating}
     >
       <View>
-        <Text style={styles.buttonText}>{title}</Text>
+        {authenticating ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>{title}</Text>
+        )}
       </View>
     </Pressable>
   );

@@ -30,6 +30,7 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
 
 # typescript
@@ -38,3 +39,9 @@ yarn-error.*
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+
+#eas
+eas.json
+
+#dummy file
+sample_data.js

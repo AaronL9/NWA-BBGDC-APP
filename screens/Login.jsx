@@ -1,4 +1,11 @@
-import { View, StyleSheet, StatusBar, Text, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  StatusBar,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useContext, useState } from "react";
 import { credentialFieldProps } from "../util/credentialFieldProps";
@@ -25,6 +32,8 @@ export default function Login() {
     authCtx.login(credential);
   };
 
+  const inputProps = credentialFieldProps(setCredential);
+
   return (
     <View style={styles.rootContainer}>
       <ScrollView style={{ width: "100%" }}>
@@ -34,10 +43,8 @@ export default function Login() {
         />
         <View style={styles.loginContainer}>
           <View style={styles.inputContainerStyle}>
-            <CredentialField {...credentialFieldProps(setCredential).email} />
-            <CredentialField
-              {...credentialFieldProps(setCredential).passowrd}
-            />
+            <CredentialField {...inputProps.email} />
+            <CredentialField {...inputProps.passowrd} />
           </View>
           {authCtx.authError && (
             <ErrorLoginMessage message={authCtx.authError} />
@@ -54,7 +61,6 @@ export default function Login() {
           </Text>
         </View>
       </ScrollView>
-      {authCtx.authenticating && <Loader />}
     </View>
   );
 }

@@ -1,5 +1,5 @@
-import { StyleSheet, ActivityIndicator, View} from 'react-native'
-import React from 'react'
+import { StyleSheet, ActivityIndicator, View } from "react-native";
+import React from "react";
 
 const Loader = () => {
   return (
@@ -7,15 +7,15 @@ const Loader = () => {
       <ActivityIndicator size="large" color="#fff" />
     </View>
   );
-}
+};
 
-export default Loader
+export default Loader;
 
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
     justifyContent: "center",
-    backgroundColor: 'black',
+    backgroundColor: "black",
     opacity: 0.5,
     top: 0,
     bottom: 0,

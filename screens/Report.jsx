@@ -15,7 +15,7 @@ import { AuthContext } from "../context/authContext";
 // firebase
 import { ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 
 // native feature
 import {
@@ -33,21 +33,27 @@ import Uploads from "../components/report/Uploads";
 import OutlinedButton from "../components/report/OutlinedButton";
 import SubmitButton from "../components/report/SubmitButton";
 import LocationField from "../components/report/LocationField";
-
-const initValue = {
-  offense: "",
-  description: "",
-};
+import { formatDateToString } from "../util/dateFormatter";
+// import { dummyData } from "../sample_data";
 
 export default function Report() {
   const { userData } = useContext(AuthContext);
+
+  const initValue = {
+    reporteeName: `${userData.firstName} ${userData.lastName}`,
+    contactNum: userData.contactNum,
+    status: "report",
+    offense: "",
+    description: "",
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   const [files, setFiles] = useState([]);
   const [reports, setReports] = useState(initValue);
   const [address, setAddress] = useState("");
-  const [coords, setCoords] = useState({ lat: 0, long: 0 });
+  const [coords, setCoords] = useState({ lat: 0, lng: 0 });
 
   const onChangeHandler = (inputIdentifier, enteredValue) => {
     setReports((currentValue) => {
@@ -63,32 +69,34 @@ export default function Report() {
     try {
       const docRef = await addDoc(collection(db, "reports"), {
         ...reports,
-        reporteeName: `${userData.firstName} ${userData.lastName}`,
-        contactNum: userData.contactNum,
-        date: serverTimestamp(),
+        date: formatDateToString(new Date()),
+        timestamp: new Date().getTime(),
         geoPoint: coords,
         location: address,
-        status: "report",
       });
-      const uploadPromises = files.map(async ({ uri }) => {
+
+      // dummyData.forEach(async (data) => {
+      //   await addDoc(collection(db, "reports"), {
+      //     ...data,
+      //     date: formatDateToString(new Date(data.date)),
+      //     timestamp: new Date(data.date).getTime(),
+      //   });
+      // });
+
+      files.forEach(async ({ uri }) => {
         const filename = extractFilename(uri);
         const file = await fetch(uri);
         const blob = await file.blob();
 
         const storageRef = ref(storage, `reports/${docRef.id}/${filename}`);
 
-        return uploadBytes(storageRef, blob);
+        uploadBytes(storageRef, blob);
       });
-
-      const snapshots = await Promise.all(uploadPromises);
 
       Alert.alert("Succesful", "Your report has been submitted");
       setReports(initValue);
       setFiles([]);
       setAddress("");
-      snapshots.forEach((snapshot) => {
-        console.log("File uploaded:", snapshot.metadata.name);
-      });
     } catch (error) {
       Alert.alert("Error uploading files", error);
     }
@@ -177,7 +185,6 @@ const styles = StyleSheet.create({
     paddingTop: 30,
     backgroundColor: "white",
     alignItems: "center",
-    // borderWidth: 5,
   },
   mediaButtonsContainer: {
     flex: 1,

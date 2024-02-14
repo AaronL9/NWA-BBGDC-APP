@@ -35,6 +35,8 @@ const Signup = () => {
 
   useEffect(() => {}, [credential]);
 
+  const inputProps = credentialFieldProps(setCredential);
+
   return (
     <View style={styles.rootContainer}>
       <ScrollView>
@@ -44,22 +46,14 @@ const Signup = () => {
         />
         <View style={styles.loginContainer}>
           <View style={styles.rowContainer}>
-            <CredentialField
-              {...credentialFieldProps(setCredential).firstName}
-            />
-            <CredentialField
-              {...credentialFieldProps(setCredential).lastName}
-            />
+            <CredentialField {...inputProps.firstName} />
+            <CredentialField {...inputProps.lastName} />
           </View>
           <View style={styles.stackContainer}>
-            <CredentialField {...credentialFieldProps(setCredential).email} />
-            <CredentialField {...credentialFieldProps(setCredential).phone} />
-            <CredentialField
-              {...credentialFieldProps(setCredential).passowrd}
-            />
-            <CredentialField
-              {...credentialFieldProps(setCredential).confirmPassword}
-            />
+            <CredentialField {...inputProps.email} />
+            <CredentialField {...inputProps.phone} />
+            <CredentialField {...inputProps.passowrd} />
+            <CredentialField {...inputProps.confirmPassword} />
           </View>
           {Object.keys(errors).length !== 0 && (
             <View style={styles.errorsContainer}>

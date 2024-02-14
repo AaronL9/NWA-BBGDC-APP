@@ -1,6 +1,8 @@
-import { View, TextInput, StyleSheet } from "react-native";
+import { View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors } from "../../constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { useState, useRef } from "react";
 
 const CredentialField = ({
   icon,
@@ -9,16 +11,35 @@ const CredentialField = ({
   isPassword = false,
   changeTextHandler = () => {},
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [hasPassword, setHasPassword] = useState(false);
+
   return (
     <View style={[styles.inputContainerStyle, customStyle]}>
       <MaterialIcons name={icon} size={24} color={Colors.primary400} />
       <TextInput
         autoCapitalize="none"
-        secureTextEntry={isPassword}
+        secureTextEntry={isPassword && !showPassword}
         style={styles.inputStyle}
         placeholder={placeholder}
-        onChangeText={changeTextHandler}
+        onChangeText={(value) => {
+          changeTextHandler(value);
+          setHasPassword(!!value);
+        }}
       />
+      {isPassword && hasPassword && (
+        <TouchableOpacity
+          onPress={() => {
+            setShowPassword((prev) => !prev);
+          }}
+        >
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={24}
+            color="black"
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

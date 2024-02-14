@@ -10,6 +10,7 @@ import Report from "../screens/Report";
 import Settings from "../screens/Settings";
 import InfoDesk from "../screens/info_desk/InfoDesk";
 import MenuBtn from "../components/Menu";
+import { Image, View } from "react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -29,6 +30,12 @@ const BottomNavigator = () => {
           headerTintColor: "white",
           headerTitle: "Neighborhood Watch",
           headerRight: () => <MenuBtn />,
+          headerLeft: () => (
+            <Image
+              source={require("../assets/logo.png")}
+              style={{ width: 35, height: 35, marginLeft: 14 }}
+            />
+          ),
           tabBarActiveTintColor: "white",
         }}
       >
@@ -52,7 +59,6 @@ const BottomNavigator = () => {
             tabBarLabelStyle: { fontSize: 14 },
           }}
         />
-
         <Tab.Screen
           name="InfoDesk"
           component={InfoDesk}
@@ -63,16 +69,6 @@ const BottomNavigator = () => {
             tabBarLabelStyle: { fontSize: 14 },
           }}
         />
-        {/* <Tab.Screen
-          name="Training"
-          component={Settings}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <MaterialIcons name="model-training" size={size} color={color} />
-            ),
-            tabBarLabelStyle: { fontSize: 14 },
-          }}
-        /> */}
       </Tab.Navigator>
     </MenuProvider>
   );

@@ -15,3 +15,13 @@ export const formatTimestamp = (timestamp) => {
 
   return formatDistanceToNow(date, { addSuffix: true });
 };
+
+export function formatDateToString(date) {
+  if (!(date instanceof Date) || isNaN(date)) {
+    throw new Error("Invalid Date object");
+  }
+
+  const formattedDate = format(date, "MMMM d, yyyy");
+
+  return formattedDate;
+}

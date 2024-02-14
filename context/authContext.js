@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../config/firebase";
 import { db } from "../config/firebase";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { getDoc, doc, setDoc } from "firebase/firestore";
 import { validateLoginForm } from "../util/formValidation";
 
 export const AuthContext = createContext({
@@ -43,16 +43,15 @@ function AuthContextProvider({ children }) {
         lastName,
         contactNum,
       };
-      await addDoc(collection(db, "users"), data);
-      setUserData(data);
+      await setDoc(doc(db, "users", user.uid), data);
     } catch (error) {
+      setAuthenticating(false);
       let errorMessage = "Failed to sign you up";
       if (error.message.includes("email-already-in-use")) {
         errorMessage = "Email already in use";
       }
       Alert.alert("Signup Failed", errorMessage);
     }
-    setAuthenticating(false);
   }
 
   async function login({ email, password }) {
@@ -62,8 +61,8 @@ function AuthContextProvider({ children }) {
     } catch (error) {
       console.log(error.code);
       setAuthError(validateLoginForm(error.code));
+      setAuthenticating(false);
     }
-    setAuthenticating(false);
   }
 
   async function logout() {
@@ -79,31 +78,33 @@ function AuthContextProvider({ children }) {
       setCurrentUser(user);
       if (user)
         try {
-          const q = query(
-            collection(db, "users"),
-            where("uid", "==", user.uid)
-          );
-          const querySnapshot = await getDocs(q);
-          setUserData(querySnapshot.docs[0].data());
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+          setUserData(docSnap.data());
         } catch (error) {
           console.log(error);
         }
-      else setUserData(null);
+      else {
+        setUserData(null);
+      }
 
       setLoading(false);
+      setAuthenticating(false);
     });
 
+    console.log(userData);
     return unsubscribe;
   }, []);
 
   const value = {
     currentUser,
     userData,
+    setUserData,
     login,
     signup,
     logout,
     authenticating,
-    isAuthenticated: !!currentUser,
+    isAuthenticated: !!currentUser && !!userData,
     authError,
   };
 

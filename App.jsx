@@ -7,7 +7,11 @@ import { useContext } from "react";
 
 function Root() {
   const authCtx = useContext(AuthContext);
-  return authCtx.isAuthenticated ? <Home /> : <Authentication />;
+  return authCtx.isAuthenticated && !authCtx.authenticating ? (
+    <Home />
+  ) : (
+    <Authentication />
+  );
 }
 
 export default function App() {

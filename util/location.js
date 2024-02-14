@@ -4,8 +4,6 @@ import {
   requestForegroundPermissionsAsync,
 } from "expo-location";
 
-const GOOGLE_API_KEY = "AIzaSyDc1tt5TIWOwkIwa_Dh7-YcL1SJB49LP84";
-
 async function verifyPermissions() {
   const { status } = await requestForegroundPermissionsAsync();
   console.log(status);
@@ -36,7 +34,7 @@ export async function getLocationHandler(setCoords, setAddress) {
   setCoords({ lat, lng });
 
   try {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}`;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.EXPO_PUBLIC_API_KEY}`;
     const response = await fetch(url);
     const data = await response.json();
     const address = data.results[0].formatted_address;
@@ -45,6 +43,6 @@ export async function getLocationHandler(setCoords, setAddress) {
       throw new Error("Failed to fetch Address!");
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 }

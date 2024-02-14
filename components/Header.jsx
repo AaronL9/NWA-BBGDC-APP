@@ -4,10 +4,7 @@ import React from "react";
 const Header = ({ customStyle, imageStyle }) => {
   return (
     <View style={[styles.headerContainer, customStyle]}>
-      <Image
-        style={imageStyle}
-        source={require("../assets/logo.png")}
-      />
+      <Image style={imageStyle} source={require("../assets/logo.png")} />
       <Text style={styles.headerText}>Neighborhood Watch</Text>
     </View>
   );
