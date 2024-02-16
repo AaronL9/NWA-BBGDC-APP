@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   uploadContainer: {
     marginVertical: 22,
     backgroundColor: "#ebf3f3",
-    width: "80%",
+    width: "100%",
     alignItems: "center",
     borderRadius: 6,
     paddingVertical: 8,

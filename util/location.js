@@ -43,6 +43,24 @@ export async function getLocationHandler(setCoords, setAddress) {
       throw new Error("Failed to fetch Address!");
     }
   } catch (error) {
+    Alert.alert("Something went wrong", "sorry we can't get your location");
+    console.log(error.message);
+  }
+}
+
+export async function getLocationAddress(coords, setAddress) {
+  const { lat, lng } = coords;
+
+  try {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${process.env.EXPO_PUBLIC_API_KEY}`;
+    const response = await fetch(url);
+    const data = await response.json();
+    const address = data.results[0].formatted_address;
+    setAddress(String(address));
+    if (!response.ok) {
+      throw new Error("Failed to fetch Address!");
+    }
+  } catch (error) {
     console.log(error);
   }
 }

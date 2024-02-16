@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import {
   Text,
   TextInput,
@@ -15,14 +15,10 @@ import { AuthContext } from "../context/authContext";
 // firebase
 import { ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../config/firebase";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 
-// native feature
-import {
-  pickMedia,
-  launchCamera,
-  launchVideoCamera,
-} from "../util/mediaPicker";
+// navigation
+import { useRoute, useIsFocused } from "@react-navigation/native";
 
 // util
 import { offense } from "../util/staticData";
@@ -30,14 +26,19 @@ import { extractFilename } from "../util/stringFormatter";
 
 // components
 import Uploads from "../components/report/Uploads";
-import OutlinedButton from "../components/report/OutlinedButton";
 import SubmitButton from "../components/report/SubmitButton";
 import LocationField from "../components/report/LocationField";
 import { formatDateToString } from "../util/dateFormatter";
+import MediaPicker from "../components/report/MediaPicker";
+import { getLocationAddress } from "../util/location";
+import SearchLocation from "../components/report/SearchLocation";
 // import { dummyData } from "../sample_data";
 
 export default function Report() {
   const { userData } = useContext(AuthContext);
+
+  const route = useRoute();
+  const isFocused = useIsFocused();
 
   const initValue = {
     reporteeName: `${userData.firstName} ${userData.lastName}`,
@@ -107,10 +108,23 @@ export default function Report() {
     setFiles((prev) => prev.filter((_, index) => index !== indexId));
   };
 
+  useEffect(() => {
+    const fetchLocationAddress = async () => {
+      if (isFocused && route.params) {
+        const mapPickedLocation = {
+          lat: route.params.pickedLat,
+          lng: route.params.pickedLng,
+        };
+        await getLocationAddress(mapPickedLocation, setAddress);
+      }
+    };
+    fetchLocationAddress();
+  }, [route, isFocused]);
+
   return (
     <ScrollView style={styles.scrollContainer}>
       <View style={styles.reportContainer}>
-        <Text style={styles.title}>Report</Text>
+        <Text style={styles.sectionTitle}>REPORT DETAILS</Text>
         <View style={styles.inputContainer}>
           <SelectDropdown
             defaultValue={reports.offense}
@@ -137,32 +151,20 @@ export default function Report() {
             placeholder="Desciprtion (optional)"
             onChangeText={onChangeHandler.bind(this, "description")}
           />
-          <LocationField
-            setAddress={setAddress}
-            setCoords={setCoords}
-            address={address}
-          />
         </View>
-        <View style={styles.mediaButtonsContainer}>
-          <OutlinedButton
-            icon={"videocam-outline"}
-            onPress={launchVideoCamera.bind(this, setFiles, setIsLoading)}
-          >
-            Take a Video
-          </OutlinedButton>
-          <OutlinedButton
-            icon={"camera-outline"}
-            onPress={launchCamera.bind(this, setFiles, setIsLoading)}
-          >
-            Take an Image
-          </OutlinedButton>
-          <OutlinedButton
-            icon={"attach"}
-            onPress={pickMedia.bind(this, setFiles, setIsLoading)}
-          >
-            Attach Images/Videos
-          </OutlinedButton>
-        </View>
+        <LocationField
+          setAddress={setAddress}
+          setCoords={setCoords}
+          address={address}
+          coords={coords}
+          titleStyle={styles.sectionTitle}
+        />
+        <MediaPicker
+          setFiles={setFiles}
+          setIsLoading={setIsLoading}
+          containerStyle={styles.buttonsContainer}
+          titleStyle={styles.sectionTitle}
+        />
         <Uploads
           files={files}
           onRemove={removeFileHanlder}
@@ -182,34 +184,51 @@ const styles = StyleSheet.create({
   reportContainer: {
     flex: 1,
     padding: 12,
-    paddingTop: 30,
+    paddingTop: 15,
+    paddingBottom: 30,
     backgroundColor: "white",
-    alignItems: "center",
+    alignSelf: "center",
+    width: "80%",
   },
-  mediaButtonsContainer: {
+  buttonsContainer: {
     flex: 1,
-    width: "100%",
-    alignItems: "center",
+    alignItems: "stretch",
     marginTop: 25,
   },
   title: {
     fontSize: 28,
-    borderBottomWidth: 3,
+    borderLeftWidth: 3,
+    borderRightWidth: 3,
     textAlign: "center",
-    width: 100,
-    alignSelf: "center",
+    alignSelf: "stretch",
+    textTransform: "uppercase",
+    fontWeight: "bold",
+    backgroundColor: "#303134",
+    color: "white",
+    borderRadius: 8,
+    paddingVertical: 4,
+  },
+  sectionTitle: {
+    fontWeight: "bold",
+    borderLeftWidth: 3,
+    borderLeftColor: Colors.bgPrimaary400,
+    paddingLeft: 12,
+    fontSize: 18,
+    marginBottom: 12,
+    marginTop: 8,
+    marginLeft: 4,
   },
   inputContainer: {
     alignItems: "center",
     width: "100%",
+    gap: 12,
   },
   inputStyle: {
     backgroundColor: "#f6f6f6",
     borderBottomColor: Colors.primary400,
     borderBottomWidth: 2,
     borderRadius: 6,
-    width: "80%",
-    marginTop: 16,
+    width: "100%",
     paddingHorizontal: 5,
     paddingVertical: 8,
     fontSize: 18,

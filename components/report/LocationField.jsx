@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,11 +9,11 @@ import {
 } from "react-native";
 import { getLocationHandler } from "../../util/location";
 import { Colors } from "../../constants/colors";
-import { useState } from "react";
+import LocationPicker from "./LocationPicker";
 
-const LocationField = ({ setAddress, setCoords, address }) => {
-  
+const LocationField = ({ setAddress, setCoords, address, titleStyle }) => {
   const [loading, setLoading] = useState(false);
+
   const getAddressHanlder = async () => {
     setLoading(true);
     await getLocationHandler(setCoords, setAddress);
@@ -21,14 +22,14 @@ const LocationField = ({ setAddress, setCoords, address }) => {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={getAddressHanlder}>
-        <Text style={styles.pressableText}>Use Current location</Text>
-      </Pressable>
+      <Text style={titleStyle}>SELECT LOCATION</Text>
+      <LocationPicker onGetCurrentLocation={getAddressHanlder} />
       <TextInput
         value={address}
         style={[styles.inputStyle]}
         placeholder="Location"
         onChangeText={(value) => setAddress(value)}
+        editable={false}
       />
       {loading && (
         <ActivityIndicator style={styles.loader} size="small" color="black" />
@@ -41,9 +42,8 @@ export default LocationField;
 
 const styles = StyleSheet.create({
   container: {
-    width: "80%",
+    width: "100%",
     marginTop: 12,
-    // borderWidth: 2,
   },
   pressableText: {
     color: Colors.primary200,

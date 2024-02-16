@@ -11,6 +11,7 @@ import Settings from "../screens/Settings";
 import InfoDesk from "../screens/info_desk/InfoDesk";
 import MenuBtn from "../components/Menu";
 import { Image, View } from "react-native";
+import Map from "../screens/Map";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -87,6 +88,7 @@ const Home = () => {
         component={BottomNavigator}
         options={{ headerShown: false }}
       />
+      <Stack.Screen name="Map" component={Map} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="ArticleView" component={ArticleView} />
     </Stack.Navigator>

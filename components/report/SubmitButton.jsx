@@ -12,7 +12,7 @@ const SubmitButton = ({ onPress, uploading }) => {
     <Pressable
       disabled={uploading}
       onPress={onPress}
-      style={({ pressed }) => [{ width: "80%" }, pressed && styles.pressed]}
+      style={({ pressed }) => [{ width: "100%" }, pressed && styles.pressed]}
     >
       <View style={styles.submitButtonContainer}>
         {uploading ? (
@@ -29,11 +29,11 @@ export default SubmitButton;
 
 const styles = StyleSheet.create({
   submitButtonContainer: {
-    backgroundColor: Colors.primary400,
     width: "100%",
     paddingVertical: 10,
     paddingHorizontal: 4,
     borderRadius: 8,
+    backgroundColor: Colors.primary400,
   },
   buttonText: {
     color: "white",
