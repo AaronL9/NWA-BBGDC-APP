@@ -71,9 +71,6 @@ export default function Map({ navigation }) {
               longitude: selectedLocation.lng,
             }}
             draggable={true}
-            onDragStart={(e) => {
-              console.log("Drag Start", e.nativeEvent.coordinate);
-            }}
             onDragEnd={(e) => {
               const lat = e.nativeEvent.coordinate.latitude;
               const lng = e.nativeEvent.coordinate.longitude;

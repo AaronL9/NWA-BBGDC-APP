@@ -1,38 +1,47 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 // native feature
 import {
-  pickMedia,
   launchCamera,
   launchVideoCamera,
+  pickImages,
+  pickVideos,
 } from "../../util/mediaPicker";
 
 import OutlinedButton from "./OutlinedButton";
 
 export default function MediaPicker({
-  setFiles,
   setIsLoading,
   containerStyle,
   titleStyle,
+  images,
+  video,
+  setImages,
+  setVideo,
 }) {
   return (
     <View style={containerStyle}>
       <Text style={titleStyle}>UPLOAD MEDIA</Text>
       <OutlinedButton
         icon={"videocam"}
-        onPress={launchVideoCamera.bind(this, setFiles, setIsLoading)}
+        onPress={launchVideoCamera.bind(this, setVideo, setIsLoading, video)}
         text="Take a Video"
       />
       <OutlinedButton
         icon={"camera"}
-        onPress={launchCamera.bind(this, setFiles, setIsLoading)}
+        onPress={launchCamera.bind(this, setImages, setIsLoading, images)}
         text="Take an Image"
       />
       <OutlinedButton
         icon={"images"}
-        onPress={pickMedia.bind(this, setFiles, setIsLoading)}
-        text="Attach Images/Videos"
+        onPress={pickImages.bind(this, setImages, setIsLoading, images)}
+        text="Attach Images"
+      />
+      <OutlinedButton
+        icon={"film"}
+        onPress={pickVideos.bind(this, setVideo, setIsLoading, video)}
+        text="Attach a Video"
       />
     </View>
   );

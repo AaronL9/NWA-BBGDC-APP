@@ -31,8 +31,10 @@ import LocationField from "../components/report/LocationField";
 import { formatDateToString } from "../util/dateFormatter";
 import MediaPicker from "../components/report/MediaPicker";
 import { getLocationAddress } from "../util/location";
-import SearchLocation from "../components/report/SearchLocation";
-// import { dummyData } from "../sample_data";
+import { dummyData } from "../sample_data";
+import { validateReportForm } from "../util/report";
+import ErrorMessage from "../components/ErrorMessage";
+import VideoLengthChecker from "../components/report/VideoLengthChecker";
 
 export default function Report() {
   const { userData } = useContext(AuthContext);
@@ -50,11 +52,15 @@ export default function Report() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState({});
 
-  const [files, setFiles] = useState([]);
+  const [images, setImages] = useState([]);
+  const [video, setVideo] = useState([]);
+  const [videoPreview, setVideoPreview] = useState([]);
+
   const [reports, setReports] = useState(initValue);
   const [address, setAddress] = useState("");
-  const [coords, setCoords] = useState({ lat: 0, lng: 0 });
+  const [coords, setCoords] = useState(null);
 
   const onChangeHandler = (inputIdentifier, enteredValue) => {
     setReports((currentValue) => {
@@ -67,7 +73,11 @@ export default function Report() {
 
   const uploadFile = async () => {
     setIsUploading(true);
+    const isValid = validateReportForm({ ...reports, address }, setError);
     try {
+      if (!isValid) {
+        throw Error("Please fill out the required fields");
+      }
       const docRef = await addDoc(collection(db, "reports"), {
         ...reports,
         date: formatDateToString(new Date()),
@@ -84,7 +94,9 @@ export default function Report() {
       //   });
       // });
 
-      files.forEach(async ({ uri }) => {
+      const media = video.concat(images);
+
+      media.forEach(async ({ uri }) => {
         const filename = extractFilename(uri);
         const file = await fetch(uri);
         const blob = await file.blob();
@@ -94,18 +106,28 @@ export default function Report() {
         uploadBytes(storageRef, blob);
       });
 
-      Alert.alert("Succesful", "Your report has been submitted");
+      Alert.alert(
+        "Report Submitted Successfully!",
+        "We have received your report and will take the necessary action"
+      );
+
       setReports(initValue);
-      setFiles([]);
+      setVideo([]);
+      setImages([]);
       setAddress("");
     } catch (error) {
-      Alert.alert("Error uploading files", error);
+      console.log(error);
+      Alert.alert("Something went wrong", error.message);
     }
     setIsUploading(false);
   };
 
-  const removeFileHanlder = (indexId) => {
-    setFiles((prev) => prev.filter((_, index) => index !== indexId));
+  const removeImageHandler = (indexId) => {
+    setImages((prev) => prev.filter((_, index) => index !== indexId));
+  };
+  const removeVideoHandler = (indexId) => {
+    setVideo((prev) => prev.filter((_, index) => index !== indexId));
+    setVideoPreview((prev) => prev.filter((_, index) => index !== indexId));
   };
 
   useEffect(() => {
@@ -115,6 +137,7 @@ export default function Report() {
           lat: route.params.pickedLat,
           lng: route.params.pickedLng,
         };
+        setCoords(mapPickedLocation);
         await getLocationAddress(mapPickedLocation, setAddress);
       }
     };
@@ -127,7 +150,6 @@ export default function Report() {
         <Text style={styles.sectionTitle}>REPORT DETAILS</Text>
         <View style={styles.inputContainer}>
           <SelectDropdown
-            defaultValue={reports.offense}
             data={offense}
             buttonStyle={[styles.inputStyle, styles.dropdownStyle]}
             renderDropdownIcon={() => (
@@ -140,6 +162,12 @@ export default function Report() {
             onSelect={(selectedItem) =>
               onChangeHandler("offense", selectedItem)
             }
+            defaultButtonText="Select an offense"
+            dropdownStyle={{ borderRadius: 4, padding: 8 }}
+            rowStyle={{ borderColor: "transparent" }}
+            rowTextStyle={{ borderWidth: 0, textAlign: "left" }}
+            selectedRowTextStyle={{ color: Colors.primary200 }}
+            selectedRowStyle={{ backgroundColor: "white", borderRadius: 6 }}
           />
           <TextInput
             value={reports.description}
@@ -160,16 +188,28 @@ export default function Report() {
           titleStyle={styles.sectionTitle}
         />
         <MediaPicker
-          setFiles={setFiles}
+          setImages={setImages}
+          setVideo={setVideo}
+          images={images}
+          video={video}
           setIsLoading={setIsLoading}
           containerStyle={styles.buttonsContainer}
           titleStyle={styles.sectionTitle}
         />
         <Uploads
-          files={files}
-          onRemove={removeFileHanlder}
+          images={images}
+          video={videoPreview}
+          onRemoveImage={removeImageHandler}
+          onRemoveVideo={removeVideoHandler}
           isLoading={isLoading}
         />
+        <VideoLengthChecker
+          videoFile={video[0]}
+          setLoading={setIsLoading}
+          setVideos={setVideo}
+          setPreview={setVideoPreview}
+        />
+        <ErrorMessage errors={error} />
         <SubmitButton onPress={uploadFile} uploading={isUploading} />
       </View>
     </ScrollView>

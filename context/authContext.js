@@ -9,6 +9,7 @@ import { auth } from "../config/firebase";
 import { db } from "../config/firebase";
 import { getDoc, doc, setDoc } from "firebase/firestore";
 import { validateLoginForm } from "../util/formValidation";
+import { extractErrorMessage } from "../util/stringFormatter";
 
 export const AuthContext = createContext({
   currentUser: null,
@@ -36,12 +37,13 @@ function AuthContextProvider({ children }) {
         credential.email,
         credential.password
       );
-      const { firstName, lastName, contactNum } = credential;
+
+      delete credential.password;
+      delete credential.confirmPassword;
+
       const data = {
         uid: user.uid,
-        firstName,
-        lastName,
-        contactNum,
+        ...credential,
       };
       await setDoc(doc(db, "users", user.uid), data);
     } catch (error) {
@@ -59,8 +61,7 @@ function AuthContextProvider({ children }) {
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-      console.log(error.code);
-      setAuthError(validateLoginForm(error.code));
+      setAuthError(extractErrorMessage(error.code));
       setAuthenticating(false);
     }
   }

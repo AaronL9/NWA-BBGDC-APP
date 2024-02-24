@@ -24,21 +24,15 @@ const LocationField = ({ setAddress, setCoords, address, titleStyle }) => {
     <View style={styles.container}>
       <Text style={titleStyle}>SELECT LOCATION</Text>
       <LocationPicker onGetCurrentLocation={getAddressHanlder} />
-      {/* <TextInput
-        value={address}
-        style={[styles.inputStyle]}
-        placeholder="Location"
-        onChangeText={(value) => setAddress(value)}
-        editable={false}
-      /> */}
       <View style={styles.inputStyle}>
-        <Text style={{ fontWeight: "bold" }}>
-          {address ? address : "No selected location"}
-        </Text>
+        {loading ? (
+          <ActivityIndicator style={styles.loader} size="small" color="black" />
+        ) : (
+          <Text style={{ fontWeight: "bold" }}>
+            {address ? address : "No selected location"}
+          </Text>
+        )}
       </View>
-      {loading && (
-        <ActivityIndicator style={styles.loader} size="small" color="black" />
-      )}
     </View>
   );
 };
@@ -56,20 +50,11 @@ const styles = StyleSheet.create({
   },
   inputStyle: {
     backgroundColor: "#f6f6f6",
-    // borderBottomColor: Colors.primary400,
-    // borderBottomWidth: 2,
     borderRadius: 6,
     width: "100%",
     paddingHorizontal: 5,
     paddingVertical: 8,
     fontSize: 18,
     marginTop: 6,
-  },
-  loader: {
-    position: "absolute",
-    right: 0,
-    left: 0,
-    top: 35,
-    bottom: 0,
   },
 });

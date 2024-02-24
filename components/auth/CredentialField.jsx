@@ -2,7 +2,7 @@ import { View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors } from "../../constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 const CredentialField = ({
   icon,

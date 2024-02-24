@@ -1,10 +1,18 @@
-import { Alert, StyleSheet, View, ActivityIndicator } from "react-native";
+import {
+  Alert,
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
 import ProfileInfoEditor from "../components/settings/ProfileInfoEditor";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/authContext";
 import { db } from "../config/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import ProfileIconBtn from "../components/settings/ProfileIconBtn";
+import ProfileInfoBirthDate from "../components/settings/ProfileInfoBirthDate";
+import ProfileInfoAddress from "../components/settings/ProfileInfoAddress";
 
 export default function Settings() {
   const { userData, setUserData } = useContext(AuthContext);
@@ -39,47 +47,69 @@ export default function Settings() {
   };
 
   return (
-    <View style={styles.settingsContainer}>
-      <View style={{ alignItems: "flex-end" }}>
-        {loading ? (
-          <ActivityIndicator color="black" size="small" />
-        ) : isEditing ? (
-          <View style={{ flexDirection: "row", gap: 8 }}>
+    <ScrollView>
+      <View style={styles.settingsContainer}>
+        <View style={{ alignItems: "flex-end" }}>
+          {loading ? (
+            <ActivityIndicator color="black" size="small" />
+          ) : isEditing ? (
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <ProfileIconBtn
+                name={"checkmark-sharp"}
+                onPressHanlder={onUpdateHandler}
+              />
+              <ProfileIconBtn name={"close"} onPressHanlder={onCancleHandler} />
+            </View>
+          ) : (
             <ProfileIconBtn
-              name={"checkmark-sharp"}
-              onPressHanlder={onUpdateHandler}
+              name="create-outline"
+              onPressHanlder={onEditHandler}
             />
-            <ProfileIconBtn name={"close"} onPressHanlder={onCancleHandler} />
-          </View>
-        ) : (
-          <ProfileIconBtn
-            name="create-outline"
-            onPressHanlder={onEditHandler}
-          />
-        )}
+          )}
+        </View>
+        <ProfileInfoEditor
+          label="FIRST NAME"
+          currentValue={data.firstName}
+          setData={setData}
+          propKey={"firstName"}
+          isEditing={isEditing}
+        />
+        <ProfileInfoEditor
+          label="LAST NAME"
+          currentValue={data.lastName}
+          setData={setData}
+          propKey={"lastName"}
+          isEditing={isEditing}
+        />
+        <ProfileInfoEditor
+          label="EMAIL"
+          currentValue={data.email}
+          setData={setData}
+          propKey={"email"}
+          isEditing={isEditing}
+        />
+        <ProfileInfoEditor
+          label="CONTACT NO."
+          currentValue={data.contactNum}
+          setData={setData}
+          propKey={"contactNum"}
+          isEditing={isEditing}
+        />
+        <ProfileInfoBirthDate
+          label="BIRTHDATE"
+          currentValue={data.birthDate}
+          setData={setData}
+          propKey={"birthDate"}
+          isEditing={isEditing}
+        />
+        <ProfileInfoAddress
+          currentValue={data.address}
+          isEditing={isEditing}
+          setData={setData}
+          label={"ADDRESS"}
+        />
       </View>
-      <ProfileInfoEditor
-        label="FIRST NAME"
-        currentValue={data.firstName}
-        setData={setData}
-        propKey={"firstName"}
-        isEditing={isEditing}
-      />
-      <ProfileInfoEditor
-        label="LAST NAME"
-        currentValue={data.lastName}
-        setData={setData}
-        propKey={"lastName"}
-        isEditing={isEditing}
-      />
-      <ProfileInfoEditor
-        label="CONTACT NO."
-        currentValue={data.contactNum}
-        setData={setData}
-        propKey={"contactNum"}
-        isEditing={isEditing}
-      />
-    </View>
+    </ScrollView>
   );
 }
 

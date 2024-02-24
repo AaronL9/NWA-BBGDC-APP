@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import { View, StyleSheet, Text, StatusBar, ScrollView } from "react-native";
-import { Octicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { Colors } from "../constants/colors";
 import { AuthContext } from "../context/authContext";
@@ -16,7 +15,9 @@ import { validateSignUpForm } from "../util/formValidation";
 import CredentialField from "../components/auth/CredentialField";
 import AuthButton from "../components/auth/AuthButton";
 import Header from "../components/Header";
-import Loader from "../components/global/Loader";
+import AddressField from "../components/auth/AddressField";
+import BirthDatePicker from "../components/auth/BirthDatePicker";
+import ErrorMessage from "../components/ErrorMessage";
 
 const Signup = () => {
   const authCtx = useContext(AuthContext);
@@ -52,23 +53,12 @@ const Signup = () => {
           <View style={styles.stackContainer}>
             <CredentialField {...inputProps.email} />
             <CredentialField {...inputProps.phone} />
+            <AddressField setCredentials={setCredential} />
+            <BirthDatePicker setCredentials={setCredential} />
             <CredentialField {...inputProps.passowrd} />
             <CredentialField {...inputProps.confirmPassword} />
           </View>
-          {Object.keys(errors).length !== 0 && (
-            <View style={styles.errorsContainer}>
-              {Object.values(errors).map((error, index) => (
-                <View key={index} style={styles.error}>
-                  <Octicons
-                    name="dot-fill"
-                    size={16}
-                    color={Colors.errorBullet}
-                  />
-                  <Text style={styles.errorText}>{error}</Text>
-                </View>
-              ))}
-            </View>
-          )}
+          <ErrorMessage errors={errors} />
           <AuthButton title={"Signup"} onPress={signUpHanlder} />
           <Text style={{ color: "white" }}>
             Already have an account?{" "}
@@ -81,7 +71,6 @@ const Signup = () => {
           </Text>
         </View>
       </ScrollView>
-      {authCtx.authenticating && <Loader />}
     </View>
   );
 };
@@ -121,22 +110,6 @@ const styles = StyleSheet.create({
   stackContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-  },
-  errorsContainer: {
-    width: "100%",
-    backgroundColor: Colors.errorsContainer,
-    gap: 5,
-    padding: 12,
-    borderRadius: 6,
-    marginTop: 12,
-  },
-  error: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-  },
-  errorText: {
-    color: Colors.errorText,
   },
   loginLink: {
     color: Colors.accent,

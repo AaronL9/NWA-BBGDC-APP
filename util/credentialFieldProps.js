@@ -5,6 +5,11 @@ export const signUpInitValue = {
   contactNum: "",
   password: "",
   confirmPassword: "",
+  birthDate: "",
+  address: {
+    houseNo: "",
+    street: "",
+  },
 };
 
 export const credentialFieldProps = (setCredential) => {
@@ -58,9 +63,9 @@ export const credentialFieldProps = (setCredential) => {
 
 const onChangeValueHandler = (identifier, setCredential, enteredText) => {
   const value = identifier.includes("assword")
-        ? enteredText
-        : enteredText.trim()
-  
+    ? enteredText
+    : enteredText.trim();
+
   setCredential((prev) => {
     return {
       ...prev,
