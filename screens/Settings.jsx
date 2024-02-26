@@ -8,7 +8,6 @@ import {
 import ProfileInfoEditor from "../components/settings/ProfileInfoEditor";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/authContext";
-// import { db } from "../config/firebase";
 import firestore from "@react-native-firebase/firestore";
 import ProfileIconBtn from "../components/settings/ProfileIconBtn";
 import ProfileInfoBirthDate from "../components/settings/ProfileInfoBirthDate";

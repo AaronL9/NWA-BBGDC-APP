@@ -22,7 +22,6 @@ function AuthContextProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [authenticating, setAuthenticating] = useState(false);
-  const [authError, setAuthError] = useState(null);
 
   async function logout() {
     try {
@@ -72,7 +71,6 @@ function AuthContextProvider({ children }) {
     authenticating,
     setAuthenticating,
     isAuthenticated: !!currentUser && !!userData,
-    authError,
   };
 
   return (

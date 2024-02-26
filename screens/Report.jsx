@@ -30,7 +30,6 @@ import LocationField from "../components/report/LocationField";
 import { formatDateToString } from "../util/dateFormatter";
 import MediaPicker from "../components/report/MediaPicker";
 import { getLocationAddress } from "../util/location";
-import { dummyData } from "../sample_data";
 import { validateReportForm } from "../util/report";
 import ErrorMessage from "../components/ErrorMessage";
 import ProgressModal from "../components/ProgressModal";
@@ -126,14 +125,6 @@ export default function Report() {
           imageURL,
           videoURL,
         });
-
-      // dummyData.forEach(async (data) => {
-      //   await addDoc(collection(db, "reports"), {
-      //     ...data,
-      //     date: formatDateToString(new Date(data.date)),
-      //     timestamp: new Date(data.date).getTime(),
-      //   });
-      // });
 
       Alert.alert(
         "Report Submitted Successfully!",

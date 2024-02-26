@@ -16,12 +16,6 @@ module.exports = {
       supportsTablet: true,
     },
     android: {
-      googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
-      config: {
-        googleMaps: {
-          apiKey: process.env.EXPO_PUBLIC_API_KEY,
-        },
-      },
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff",
@@ -33,6 +27,12 @@ module.exports = {
         "android.permission.FOREGROUND_SERVICE",
       ],
       package: "com.neigborhoodwatch.client",
+      googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
+      config: {
+        googleMaps: {
+          apiKey: process.env.EXPO_PUBLIC_API_KEY,
+        },
+      },
     },
     web: {
       favicon: "./assets/favicon.png",
