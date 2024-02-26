@@ -1,6 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import { View, StyleSheet, Text, StatusBar, ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useContext, useState } from "react";
+import { View, StyleSheet, StatusBar, ScrollView } from "react-native";
 import { Colors } from "../constants/colors";
 import { AuthContext } from "../context/authContext";
 import firestore from "@react-native-firebase/firestore";
@@ -42,10 +41,6 @@ export default function Signup({ route, navigation }) {
     }
     setAuthenticating(false);
   };
-
-  // useEffect(() => {
-  //   setAuthenticating(false);
-  // }, [credential]);
 
   const inputProps = credentialFieldProps(setCredential);
 

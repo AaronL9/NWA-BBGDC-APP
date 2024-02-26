@@ -1,4 +1,3 @@
-import { Alert } from "react-native";
 import { createContext, useState, useEffect } from "react";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";

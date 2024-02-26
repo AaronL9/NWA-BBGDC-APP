@@ -1,5 +1,5 @@
 import { View, StyleSheet, StatusBar, ScrollView } from "react-native";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/authContext";
 import { Colors } from "../constants/colors";
 import auth from "@react-native-firebase/auth";
@@ -51,10 +51,6 @@ export default function Login() {
       setAuthenticating(false);
     }
   };
-
-  // useEffect(() => {
-  //   setAuthenticating(false);
-  // }, []);
 
   return (
     <View style={styles.rootContainer}>

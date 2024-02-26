@@ -33,7 +33,6 @@ import { getLocationAddress } from "../util/location";
 import { dummyData } from "../sample_data";
 import { validateReportForm } from "../util/report";
 import ErrorMessage from "../components/ErrorMessage";
-import VideoLengthChecker from "../components/report/VideoLengthChecker";
 import ProgressModal from "../components/ProgressModal";
 
 export default function Report() {
