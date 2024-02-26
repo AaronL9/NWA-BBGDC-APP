@@ -1,12 +1,5 @@
-import { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  Pressable,
-  View,
-  TextInput,
-  ActivityIndicator,
-} from "react-native";
+import { useState } from "react";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { getLocationHandler } from "../../util/location";
 import { Colors } from "../../constants/colors";
 import LocationPicker from "./LocationPicker";
@@ -15,9 +8,7 @@ const LocationField = ({ setAddress, setCoords, address, titleStyle }) => {
   const [loading, setLoading] = useState(false);
 
   const getAddressHanlder = async () => {
-    setLoading(true);
-    await getLocationHandler(setCoords, setAddress);
-    setLoading(false);
+    await getLocationHandler(setCoords, setAddress, setLoading);
   };
 
   return (

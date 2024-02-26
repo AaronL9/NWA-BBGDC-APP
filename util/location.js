@@ -21,13 +21,18 @@ async function verifyPermissions() {
   return true;
 }
 
-export async function getLocationHandler(setCoords, setAddress) {
+export async function getLocationHandler(setCoords, setAddress, setLoading) {
   const hasPermission = await verifyPermissions();
 
   if (!hasPermission) {
     return;
   }
 
+  const longerFetch = setTimeout(() => {
+    throw new Error("It taking longer than usual. Please try again");
+  }, 15000);
+
+  setLoading(true);
   const location = await getCurrentPositionAsync();
   const lat = location.coords.latitude;
   const lng = location.coords.longitude;
@@ -53,9 +58,12 @@ export async function getLocationHandler(setCoords, setAddress) {
     }
 
     setAddress(String(address.join(", ")));
+    clearTimeout(longerFetch);
   } catch (error) {
     Alert.alert("Something went wrong", "sorry we can't get your location");
     console.log(error.message);
+  } finally {
+    setLoading(false);
   }
 }
 

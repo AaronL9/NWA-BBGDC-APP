@@ -60,13 +60,15 @@ export const launchVideoCamera = async (
       const uri = result.assets[0].uri;
       const metaData = await getVideoMetaData(uri);
 
-      if (metaData.duration > 200)
+      console.log("before compression: ", metaData);
+
+      if (metaData.duration > 300)
         throw new Error(
           "The uploaded video exceeds the maximum allowed duration of 5 minutes."
         );
 
       let currentUri = uri;
-      if (metaData.size > 2500) {
+      if (metaData.size > 25000) {
         const compressed = await Video.compress(
           result.assets[0].uri,
           {
@@ -78,6 +80,12 @@ export const launchVideoCamera = async (
             setCompressing(` ${(progress * 100).toFixed(2)}%`);
           }
         );
+        const metaData = await getVideoMetaData(compressed);
+        console.log("After compression: ", metaData);
+        if (metaData.size > 25000)
+          throw new Error(
+            "The compressed video size exceeds the maximum allowed size. Please choose a shorter or lower quality video."
+          );
         currentUri = compressed;
       }
 
@@ -171,13 +179,13 @@ export const pickVideos = async (
       const uri = result.assets[0].uri;
       const metaData = await getVideoMetaData(uri);
 
-      if (metaData.duration > 200)
+      if (metaData.duration > 300)
         throw new Error(
           "The uploaded video exceeds the maximum allowed duration of 5 minutes."
         );
 
       let currentUri = uri;
-      if (metaData.size > 1) {
+      if (metaData.size > 25000) {
         const compressed = await Video.compress(
           result.assets[0].uri,
           {
@@ -187,11 +195,13 @@ export const pickVideos = async (
           },
           (progress) => {
             setCompressing(` ${(progress * 100).toFixed(2)}%`);
-            console.log(
-              `compression progress: ${(progress * 100).toFixed(2)}%`
-            );
           }
         );
+        const metaData = await getVideoMetaData(compressed);
+        if (metaData.size > 25000)
+          throw new Error(
+            "The compressed video size exceeds the maximum allowed size. Please choose a shorter or lower quality video."
+          );
         currentUri = compressed;
       }
 
@@ -206,27 +216,4 @@ export const pickVideos = async (
     setIsLoading(false);
     setCompressing(false);
   }
-};
-
-export const pickMedia = async (setFiles, setIsLoading) => {
-  const permission = await verifyMediaLibrary();
-  if (!permission) return;
-
-  setIsLoading(true);
-  try {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      quality: 0,
-      allowsMultipleSelection: true,
-      selectionLimit: 3,
-    });
-
-    if (!result.canceled) {
-      setFiles((prev) => prev.concat(result.assets));
-    }
-  } catch (error) {
-    console.log(permission);
-    console.log("Error while selecting file: ", error);
-  }
-  setIsLoading(false);
 };

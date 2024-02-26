@@ -1,7 +1,6 @@
 module.exports = {
   expo: {
     name: "client",
-    displayName: "Neigborhood Watch - dev",
     slug: "client",
     version: "1.0.1",
     orientation: "portrait",

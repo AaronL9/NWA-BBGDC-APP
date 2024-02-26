@@ -29,8 +29,8 @@ export function validatePhoneNumber(phoneNumber, setError) {
   const cleanedNumber = phoneNumber.trim();
 
   // Check if there are any characters aside from numbers
-  if (/[^0-9]/.test(cleanedNumber)) {
-    setError("Phone number should only contain numeric characters");
+  if (/[^0-9+]/.test(cleanedNumber)) {
+    setError("Invalid phone number");
     return null;
   }
 
