@@ -9,7 +9,7 @@ import ProfileInfoEditor from "../components/settings/ProfileInfoEditor";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/authContext";
 import { db } from "../config/firebase";
-import { doc, updateDoc } from "firebase/firestore";
+import firestore from "@react-native-firebase/firestore";
 import ProfileIconBtn from "../components/settings/ProfileIconBtn";
 import ProfileInfoBirthDate from "../components/settings/ProfileInfoBirthDate";
 import ProfileInfoAddress from "../components/settings/ProfileInfoAddress";
@@ -26,8 +26,7 @@ export default function Settings() {
     setIsEditing(false);
 
     try {
-      const userRef = doc(db, "users", userData.uid);
-      await updateDoc(userRef, data);
+      await firestore().collection("users").doc(userData.uid).update(data);
       setUserData(data);
       Alert.alert("Updated", "You have successfully updated your profile");
     } catch (error) {
@@ -81,20 +80,13 @@ export default function Settings() {
           propKey={"lastName"}
           isEditing={isEditing}
         />
-        <ProfileInfoEditor
-          label="EMAIL"
-          currentValue={data.email}
-          setData={setData}
-          propKey={"email"}
-          isEditing={isEditing}
-        />
-        <ProfileInfoEditor
+        {/* <ProfileInfoEditor
           label="CONTACT NO."
           currentValue={data.contactNum}
           setData={setData}
           propKey={"contactNum"}
           isEditing={isEditing}
-        />
+        /> */}
         <ProfileInfoBirthDate
           label="BIRTHDATE"
           currentValue={data.birthDate}

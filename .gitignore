@@ -40,8 +40,8 @@ yarn-error.*
 .vscode/*
 !.vscode/extensions.json
 
-#eas
-eas.json
-
 #dummy file
 sample_data.js
+
+# credential
+google-services.json

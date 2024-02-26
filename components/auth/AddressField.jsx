@@ -5,9 +5,10 @@ import { Colors } from "../../constants/colors";
 
 export default function AddressField({ setCredentials }) {
   const onChangeHanlder = async (key, value) => {
+    const inputVal = value.trim();
     setCredentials((prev) => ({
       ...prev,
-      address: { ...prev.address, [key]: value },
+      address: { ...prev.address, [key]: inputVal },
     }));
   };
 

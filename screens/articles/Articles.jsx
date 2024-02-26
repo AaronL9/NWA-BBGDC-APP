@@ -2,8 +2,7 @@ import { Text, StyleSheet, FlatList } from "react-native";
 import { useEffect, useState } from "react";
 
 // firebase
-import { collection, getDocs, onSnapshot } from "firebase/firestore";
-import { db } from "../../config/firebase.js";
+import firestore from "@react-native-firebase/firestore";
 
 // components
 import ArticleCard from "../../components/ArticleCard.jsx";
@@ -13,10 +12,9 @@ export default function Articles() {
   const [articles, setArticles] = useState([]);
 
   useEffect(() => {
-    const fetchArticles = () => {
-      const articlesCollection = collection(db, "articles");
-
-      const unsubscribe = onSnapshot(articlesCollection, (querySnapshot) => {
+    const subscriber = firestore()
+      .collection("articles")
+      .onSnapshot((querySnapshot) => {
         const data = [];
         querySnapshot.forEach((doc) => {
           const obj = doc.data();
@@ -26,14 +24,7 @@ export default function Articles() {
 
         setArticles(data);
       });
-      return unsubscribe;
-    };
-
-    const unsubscribe = fetchArticles();
-
-    return () => {
-      unsubscribe();
-    };
+    return () => subscriber();
   }, []);
 
   return (

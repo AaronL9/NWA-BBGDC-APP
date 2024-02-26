@@ -1,29 +1,23 @@
-import { View, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { View, TextInput, StyleSheet } from "react-native";
 import { Colors } from "../../constants/colors";
 import { MaterialIcons } from "@expo/vector-icons";
 
-const CredentialField = ({
-  icon,
-  placeholder,
-  customStyle,
-  changeTextHandler = () => {},
-}) => {
+const SignInField = ({ setValue, placeholder, icon }) => {
   return (
-    <View style={[styles.inputContainerStyle, customStyle]}>
+    <View style={styles.inputContainerStyle}>
       <MaterialIcons name={icon} size={24} color={Colors.primary400} />
       <TextInput
-        autoCapitalize="none"
+        keyboardType="number-pad"
         style={styles.inputStyle}
         placeholder={placeholder}
-        onChangeText={(value) => {
-          changeTextHandler(value);
-        }}
+        onChangeText={setValue}
+        maxLength={13}
       />
     </View>
   );
 };
 
-export default CredentialField;
+export default SignInField;
 
 const styles = StyleSheet.create({
   inputContainerStyle: {
@@ -38,6 +32,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f6f6f6",
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
   },
   inputStyle: {
     flex: 1,

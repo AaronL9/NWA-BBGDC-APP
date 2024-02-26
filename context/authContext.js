@@ -1,99 +1,67 @@
 import { Alert } from "react-native";
 import { createContext, useState, useEffect } from "react";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
-import { auth } from "../config/firebase";
-import { db } from "../config/firebase";
-import { getDoc, doc, setDoc } from "firebase/firestore";
-import { validateLoginForm } from "../util/formValidation";
-import { extractErrorMessage } from "../util/stringFormatter";
+import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
+import { useNavigation } from "@react-navigation/native";
 
 export const AuthContext = createContext({
   currentUser: null,
+  userData: null,
+  setUserData: () => {},
   login: () => {},
   signup: () => {},
   logout: () => {},
   isAuthenticated: false,
   authenticating: false,
+  setAuthenticating: () => {},
   authError: null,
-  userData: {},
 });
 
 function AuthContextProvider({ children }) {
+  const navigation = useNavigation();
+  const [initializing, setInitializing] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-  const [userData, setUserData] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState(null);
   const [authenticating, setAuthenticating] = useState(false);
   const [authError, setAuthError] = useState(null);
 
-  async function signup(credential) {
-    setAuthenticating(true);
-    try {
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        credential.email,
-        credential.password
-      );
-
-      delete credential.password;
-      delete credential.confirmPassword;
-
-      const data = {
-        uid: user.uid,
-        ...credential,
-      };
-      await setDoc(doc(db, "users", user.uid), data);
-    } catch (error) {
-      setAuthenticating(false);
-      let errorMessage = "Failed to sign you up";
-      if (error.message.includes("email-already-in-use")) {
-        errorMessage = "Email already in use";
-      }
-      Alert.alert("Signup Failed", errorMessage);
-    }
-  }
-
-  async function login({ email, password }) {
-    setAuthenticating(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-      setAuthError(extractErrorMessage(error.code));
-      setAuthenticating(false);
-    }
-  }
-
   async function logout() {
     try {
-      await signOut(auth);
+      await auth().signOut();
     } catch (error) {
       console.log(error.code, error.message);
     }
   }
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    const unsubscribe = auth().onAuthStateChanged(async (user) => {
       setCurrentUser(user);
-      if (user)
+      if (user) {
         try {
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-          setUserData(docSnap.data());
+          const userData = await firestore()
+            .collection("users")
+            .doc(user.uid)
+            .get();
+          if (userData.exists) {
+            setUserData(userData.data());
+          } else {
+            setUserData(null);
+            const { uid, phoneNumber } = user;
+            navigation.navigate("Signup", {
+              uid,
+              phoneNumber: phoneNumber.replace("+63", "0"),
+            });
+          }
         } catch (error) {
           console.log(error);
         }
-      else {
-        setUserData(null);
       }
 
-      setLoading(false);
+      console.log(user);
+      setInitializing(false);
       setAuthenticating(false);
     });
 
-    console.log(userData);
     return unsubscribe;
   }, []);
 
@@ -101,17 +69,16 @@ function AuthContextProvider({ children }) {
     currentUser,
     userData,
     setUserData,
-    login,
-    signup,
     logout,
     authenticating,
+    setAuthenticating,
     isAuthenticated: !!currentUser && !!userData,
     authError,
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {!initializing && children}
     </AuthContext.Provider>
   );
 }

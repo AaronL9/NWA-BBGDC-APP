@@ -1,6 +1,6 @@
 import { useCallback, useLayoutEffect, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import IconBtn from "../components/global/IconBtn";
 import SearchLocation from "../components/report/SearchLocation.jsx";
 
@@ -61,6 +61,7 @@ export default function Map({ navigation }) {
         mapType="hybrid"
         loadingEnabled
         zoomControlEnabled
+        provider={PROVIDER_GOOGLE}
       >
         {selectedLocation && (
           <Marker

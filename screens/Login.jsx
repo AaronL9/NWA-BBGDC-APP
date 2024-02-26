@@ -1,38 +1,60 @@
-import {
-  View,
-  StyleSheet,
-  StatusBar,
-  Text,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useContext, useState } from "react";
-import { credentialFieldProps } from "../util/credentialFieldProps";
+import { View, StyleSheet, StatusBar, ScrollView } from "react-native";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/authContext";
 import { Colors } from "../constants/colors";
+import auth from "@react-native-firebase/auth";
 
 // components
-import CredentialField from "../components/auth/CredentialField";
 import AuthButton from "../components/auth/AuthButton";
 import Header from "../components/Header";
-import Loader from "../components/global/Loader";
 import ErrorLoginMessage from "../components/auth/ErrorLoginMessage";
+import SignInField from "../components/auth/PhoneNumberField";
+import { validatePhoneNumber } from "../util/formValidation";
+import { extractErrorMessage } from "../util/stringFormatter";
 
 export default function Login() {
-  const authCtx = useContext(AuthContext);
-  const navigation = useNavigation();
+  const { setAuthenticating } = useContext(AuthContext);
 
-  const [credential, setCredential] = useState({
-    email: "",
-    passowrd: "",
-  });
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [code, setCode] = useState("");
+  const [confirm, setConfirm] = useState(null);
+  const [error, setError] = useState(null);
 
-  const loginInHandler = async () => {
-    authCtx.login(credential);
+  const sendCodeHandler = async () => {
+    setError(null);
+    const formattedPhoneNumber = validatePhoneNumber(phoneNumber, setError);
+    if (!formattedPhoneNumber) return;
+    console.log(formattedPhoneNumber);
+    try {
+      setAuthenticating(true);
+      const confirmation = await auth().signInWithPhoneNumber(
+        formattedPhoneNumber
+      );
+      console.log(JSON.stringify(confirmation, null, 2));
+      setConfirm(confirmation);
+    } catch (error) {
+      console.log("Error sending code: ", error);
+      setError(extractErrorMessage(error.code));
+    } finally {
+      setAuthenticating(false);
+    }
   };
 
-  const inputProps = credentialFieldProps(setCredential);
+  const confirmCode = async () => {
+    setError(null);
+    try {
+      setAuthenticating(true);
+      await confirm.confirm(code);
+    } catch (error) {
+      console.log("Invalid code: ", error.code);
+      setError(extractErrorMessage(error.code));
+      setAuthenticating(false);
+    }
+  };
+
+  // useEffect(() => {
+  //   setAuthenticating(false);
+  // }, []);
 
   return (
     <View style={styles.rootContainer}>
@@ -42,23 +64,31 @@ export default function Login() {
           imageStyle={styles.headerImage}
         />
         <View style={styles.loginContainer}>
-          <View style={styles.inputContainerStyle}>
-            <CredentialField {...inputProps.email} />
-            <CredentialField {...inputProps.passowrd} />
-          </View>
-          {authCtx.authError && (
-            <ErrorLoginMessage message={authCtx.authError} />
+          {!confirm ? (
+            <>
+              <View style={styles.inputContainerStyle}>
+                <SignInField
+                  icon="phone-android"
+                  setValue={setPhoneNumber}
+                  placeholder="Phone Number"
+                />
+              </View>
+              {error && <ErrorLoginMessage message={error} />}
+              <AuthButton title={"Send code"} onPress={sendCodeHandler} />
+            </>
+          ) : (
+            <>
+              <View style={styles.inputContainerStyle}>
+                <SignInField
+                  icon="confirmation-number"
+                  setValue={setCode}
+                  placeholder="Code"
+                />
+              </View>
+              {error && <ErrorLoginMessage message={error} />}
+              <AuthButton title={"Confirm"} onPress={confirmCode} />
+            </>
           )}
-          <AuthButton title={"Login"} onPress={loginInHandler} />
-          <Text style={{ color: "white" }}>
-            Don't have an account?{" "}
-            <Text
-              style={styles.signUpLink}
-              onPress={() => navigation.replace("Signup")}
-            >
-              Sign up
-            </Text>
-          </Text>
         </View>
       </ScrollView>
     </View>

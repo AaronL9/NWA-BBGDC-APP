@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, StatusBar, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Colors } from "../constants/colors";
 import { AuthContext } from "../context/authContext";
+import firestore from "@react-native-firebase/firestore";
 
 // utils
 import {
@@ -19,22 +20,32 @@ import AddressField from "../components/auth/AddressField";
 import BirthDatePicker from "../components/auth/BirthDatePicker";
 import ErrorMessage from "../components/ErrorMessage";
 
-const Signup = () => {
-  const authCtx = useContext(AuthContext);
-  const navigation = useNavigation();
+export default function Signup({ route, navigation }) {
+  const { setAuthenticating, setUserData } = useContext(AuthContext);
+  const { uid, phoneNumber } = route.params;
 
   const [credential, setCredential] = useState(signUpInitValue);
   const [errors, setErrors] = useState({});
 
   const signUpHanlder = async () => {
+    setErrors(null);
+    setAuthenticating(true);
     const isValid = validateSignUpForm(credential, setErrors);
     if (isValid) {
-      authCtx.signup(credential);
-      return;
+      try {
+        const userData = { uid, phoneNumber, ...credential };
+        await firestore().collection("users").doc(uid).set(userData);
+        setUserData(userData);
+      } catch (error) {
+        console.log("Error creating user: ", error);
+      }
     }
+    setAuthenticating(false);
   };
 
-  useEffect(() => {}, [credential]);
+  // useEffect(() => {
+  //   setAuthenticating(false);
+  // }, [credential]);
 
   const inputProps = credentialFieldProps(setCredential);
 
@@ -51,31 +62,16 @@ const Signup = () => {
             <CredentialField {...inputProps.lastName} />
           </View>
           <View style={styles.stackContainer}>
-            <CredentialField {...inputProps.email} />
-            <CredentialField {...inputProps.phone} />
             <AddressField setCredentials={setCredential} />
             <BirthDatePicker setCredentials={setCredential} />
-            <CredentialField {...inputProps.passowrd} />
-            <CredentialField {...inputProps.confirmPassword} />
           </View>
           <ErrorMessage errors={errors} />
-          <AuthButton title={"Signup"} onPress={signUpHanlder} />
-          <Text style={{ color: "white" }}>
-            Already have an account?{" "}
-            <Text
-              style={styles.loginLink}
-              onPress={() => navigation.replace("Login")}
-            >
-              Login
-            </Text>
-          </Text>
+          <AuthButton title={"Continue"} onPress={signUpHanlder} />
         </View>
       </ScrollView>
     </View>
   );
-};
-
-export default Signup;
+}
 
 const styles = StyleSheet.create({
   rootContainer: {

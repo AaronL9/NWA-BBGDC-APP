@@ -8,7 +8,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 export default function BirthDatePicker({ setCredentials }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const [dateValue, setDateValue] = useState("Birthdate");
+  const [dateValue, setDateValue] = useState("");
 
   const onChangeDateHandler = (event, selectedDate) => {
     console.log(formatDateToString(selectedDate));
@@ -30,7 +30,9 @@ export default function BirthDatePicker({ setCredentials }) {
         onPress={() => setShowDatePicker(true)}
       >
         <Ionicons name="calendar" size={20} color={Colors.primary400} />
-        <Text>{dateValue}</Text>
+        <Text style={{ color: dateValue ? "black" : "#aaaaaa", fontSize: 15 }}>
+          {dateValue || "Birthdate"}
+        </Text>
         {showDatePicker && (
           <DateTimePicker
             value={new Date()}

@@ -13,9 +13,8 @@ import { Colors } from "../constants/colors";
 import { AuthContext } from "../context/authContext";
 
 // firebase
-import { ref, uploadBytes } from "firebase/storage";
-import { db, storage } from "../config/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import storage from "@react-native-firebase/storage";
+import firestore from "@react-native-firebase/firestore";
 
 // navigation
 import { useRoute, useIsFocused } from "@react-navigation/native";
@@ -44,7 +43,6 @@ export default function Report() {
 
   const initValue = {
     reporteeName: `${userData.firstName} ${userData.lastName}`,
-    contactNum: userData.contactNum,
     status: "report",
     offense: "",
     description: "",
@@ -62,6 +60,41 @@ export default function Report() {
   const [address, setAddress] = useState("");
   const [coords, setCoords] = useState(null);
 
+  const removeImageHandler = (indexId) => {
+    setImages((prev) => prev.filter((_, index) => index !== indexId));
+  };
+  const removeVideoHandler = (indexId) => {
+    setVideo((prev) => prev.filter((_, index) => index !== indexId));
+    setVideoPreview((prev) => prev.filter((_, index) => index !== indexId));
+  };
+
+  const uploadMedia = async (docId, media, type) => {
+    try {
+      const urls = await Promise.all(
+        media.map(async ({ uri }) => {
+          const filename = extractFilename(uri);
+          const file = await fetch(uri);
+          const blob = await file.blob();
+
+          const storageRef = storage().ref(
+            `reports/${docId}/${type}/${filename}`
+          );
+          await storageRef.put(blob);
+
+          // Ensure storageRef is properly created before getting downloadURL
+          const downloadURL = await storageRef.getDownloadURL();
+          console.log(downloadURL);
+          return downloadURL;
+        })
+      );
+
+      return urls;
+    } catch (error) {
+      console.error("Error uploading media:", error);
+      throw error; // Rethrow the error for the caller to handle
+    }
+  };
+
   const onChangeHandler = (inputIdentifier, enteredValue) => {
     setReports((currentValue) => {
       return {
@@ -73,18 +106,27 @@ export default function Report() {
 
   const uploadFile = async () => {
     setIsUploading(true);
+    console.log(reports);
     const isValid = validateReportForm({ ...reports, address }, setError);
     try {
       if (!isValid) {
         throw Error("Please fill out the required fields");
       }
-      const docRef = await addDoc(collection(db, "reports"), {
-        ...reports,
-        date: formatDateToString(new Date()),
-        timestamp: new Date().getTime(),
-        geoPoint: coords,
-        location: address,
-      });
+
+      const imageURL = await uploadMedia(userData.uid, images, "images");
+      const videoURL = await uploadMedia(userData.uid, video, "videos");
+
+      await firestore()
+        .collection("reports")
+        .add({
+          ...reports,
+          date: formatDateToString(new Date()),
+          timestamp: new Date().getTime(),
+          geoPoint: coords,
+          location: address,
+          imageURL,
+          videoURL,
+        });
 
       // dummyData.forEach(async (data) => {
       //   await addDoc(collection(db, "reports"), {
@@ -93,18 +135,6 @@ export default function Report() {
       //     timestamp: new Date(data.date).getTime(),
       //   });
       // });
-
-      const media = video.concat(images);
-
-      media.forEach(async ({ uri }) => {
-        const filename = extractFilename(uri);
-        const file = await fetch(uri);
-        const blob = await file.blob();
-
-        const storageRef = ref(storage, `reports/${docRef.id}/${filename}`);
-
-        uploadBytes(storageRef, blob);
-      });
 
       Alert.alert(
         "Report Submitted Successfully!",
@@ -116,18 +146,10 @@ export default function Report() {
       setImages([]);
       setAddress("");
     } catch (error) {
-      console.log(error);
+      console.log("Error submitting your report: ", error);
       Alert.alert("Something went wrong", error.message);
     }
     setIsUploading(false);
-  };
-
-  const removeImageHandler = (indexId) => {
-    setImages((prev) => prev.filter((_, index) => index !== indexId));
-  };
-  const removeVideoHandler = (indexId) => {
-    setVideo((prev) => prev.filter((_, index) => index !== indexId));
-    setVideoPreview((prev) => prev.filter((_, index) => index !== indexId));
   };
 
   useEffect(() => {
@@ -174,7 +196,6 @@ export default function Report() {
             style={[styles.inputStyle, styles.textarea]}
             multiline={true}
             numberOfLines={8}
-            selectTextOnFocus={true}
             editable
             placeholder="Desciprtion (optional)"
             onChangeText={onChangeHandler.bind(this, "description")}
