@@ -1,4 +1,5 @@
 import { Alert, Linking } from "react-native";
+import { Video, getVideoMetaData } from "react-native-compressor";
 import * as ImagePicker from "expo-image-picker";
 
 const verifyCameraPermission = async () => {
@@ -37,7 +38,12 @@ const verifyMediaLibrary = async () => {
   return true;
 };
 
-export const launchVideoCamera = async (setFiles, setIsLoading, files) => {
+export const launchVideoCamera = async (
+  setFiles,
+  setIsLoading,
+  files,
+  setCompressing
+) => {
   const permission = await verifyCameraPermission();
   if (!permission) return;
 
@@ -50,11 +56,40 @@ export const launchVideoCamera = async (setFiles, setIsLoading, files) => {
       quality: 0,
     });
 
-    if (!result.canceled) setFiles((prev) => prev.concat(result.assets));
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      const metaData = await getVideoMetaData(uri);
+
+      if (metaData.duration > 200)
+        throw new Error(
+          "The uploaded video exceeds the maximum allowed duration of 5 minutes."
+        );
+
+      let currentUri = uri;
+      if (metaData.size > 25) {
+        const compressed = await Video.compress(
+          result.assets[0].uri,
+          {
+            compressionMethod: "manual",
+            bitrate: 0.1,
+            progressDivider: 5,
+          },
+          (progress) => {
+            setCompressing(` ${(progress * 100).toFixed(2)}%`);
+          }
+        );
+        currentUri = compressed;
+      }
+
+      const assets = [{ ...result.assets[0], uri: currentUri }];
+      setFiles((prev) => prev.concat(assets));
+    }
   } catch (error) {
-    setIsLoading(false);
     Alert.alert("Sorry", error.message);
     console.log("Error while taking a video: ", error);
+  } finally {
+    setIsLoading(false);
+    setCompressing(false);
   }
 };
 
@@ -70,7 +105,7 @@ export const launchCamera = async (setFiles, setIsLoading, files) => {
 
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
+      quality: 0.8,
     });
 
     if (!result.canceled) {
@@ -97,7 +132,7 @@ export const pickImages = async (setFiles, setIsLoading, files) => {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
+      quality: 0.8,
       allowsMultipleSelection: true,
       selectionLimit: 4,
     });
@@ -115,7 +150,12 @@ export const pickImages = async (setFiles, setIsLoading, files) => {
   setIsLoading(false);
 };
 
-export const pickVideos = async (setFiles, setIsLoading, files) => {
+export const pickVideos = async (
+  setFiles,
+  setIsLoading,
+  files,
+  setCompressing
+) => {
   const permission = await verifyMediaLibrary();
   if (!permission) return;
 
@@ -124,16 +164,47 @@ export const pickVideos = async (setFiles, setIsLoading, files) => {
     if (files.length > 0) throw new Error("You can only upload one video");
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      quality: 1,
+      quality: 0.1,
     });
 
     if (!result.canceled) {
-      setFiles((prev) => prev.concat(result.assets));
+      const uri = result.assets[0].uri;
+      const metaData = await getVideoMetaData(uri);
+
+      if (metaData.duration > 200)
+        throw new Error(
+          "The uploaded video exceeds the maximum allowed duration of 5 minutes."
+        );
+
+      let currentUri = uri;
+      if (metaData.size > 1) {
+        const compressed = await Video.compress(
+          result.assets[0].uri,
+          {
+            compressionMethod: "manual",
+            bitrate: 0.1,
+            progressDivider: 5,
+          },
+          (progress) => {
+            setCompressing(` ${(progress * 100).toFixed(2)}%`);
+            console.log(
+              `compression progress: ${(progress * 100).toFixed(2)}%`
+            );
+          }
+        );
+        currentUri = compressed;
+      }
+
+      console.log(JSON.stringify(metaData, null, 2));
+      const assets = [{ ...result.assets[0], uri: currentUri }];
+      setFiles((prev) => prev.concat(assets));
     }
   } catch (error) {
-    setIsLoading(false);
     Alert.alert("Sorry", error.message);
     console.log("Error while selecting file: ", error);
+  } finally {
+    setIsLoading(false);
+    setCompressing(false);
   }
 };
 

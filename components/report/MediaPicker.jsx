@@ -19,13 +19,20 @@ export default function MediaPicker({
   video,
   setImages,
   setVideo,
+  setCompressing,
 }) {
   return (
     <View style={containerStyle}>
       <Text style={titleStyle}>UPLOAD MEDIA</Text>
       <OutlinedButton
         icon={"videocam"}
-        onPress={launchVideoCamera.bind(this, setVideo, setIsLoading, video)}
+        onPress={launchVideoCamera.bind(
+          this,
+          setVideo,
+          setIsLoading,
+          video,
+          setCompressing
+        )}
         text="Take a Video"
       />
       <OutlinedButton
@@ -40,7 +47,13 @@ export default function MediaPicker({
       />
       <OutlinedButton
         icon={"film"}
-        onPress={pickVideos.bind(this, setVideo, setIsLoading, video)}
+        onPress={pickVideos.bind(
+          this,
+          setVideo,
+          setIsLoading,
+          video,
+          setCompressing
+        )}
         text="Attach a Video"
       />
     </View>

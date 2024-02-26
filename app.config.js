@@ -54,6 +54,7 @@ module.exports = {
             "Allow Neigborhood Watch to use your location.",
         },
       ],
+      "react-native-compressor",
     ],
     extra: {
       eas: {

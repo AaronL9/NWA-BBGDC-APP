@@ -34,6 +34,7 @@ import { dummyData } from "../sample_data";
 import { validateReportForm } from "../util/report";
 import ErrorMessage from "../components/ErrorMessage";
 import VideoLengthChecker from "../components/report/VideoLengthChecker";
+import ProgressModal from "../components/ProgressModal";
 
 export default function Report() {
   const { userData } = useContext(AuthContext);
@@ -50,11 +51,11 @@ export default function Report() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [compressing, setCompressing] = useState(false);
   const [error, setError] = useState({});
 
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState([]);
-  const [videoPreview, setVideoPreview] = useState([]);
 
   const [reports, setReports] = useState(initValue);
   const [address, setAddress] = useState("");
@@ -65,7 +66,6 @@ export default function Report() {
   };
   const removeVideoHandler = (indexId) => {
     setVideo((prev) => prev.filter((_, index) => index !== indexId));
-    setVideoPreview((prev) => prev.filter((_, index) => index !== indexId));
   };
 
   const uploadMedia = async (docId, media, type) => {
@@ -144,6 +144,7 @@ export default function Report() {
       setReports(initValue);
       setVideo([]);
       setImages([]);
+      setVideoPreview([]);
       setAddress("");
     } catch (error) {
       console.log("Error submitting your report: ", error);
@@ -216,23 +217,19 @@ export default function Report() {
           setIsLoading={setIsLoading}
           containerStyle={styles.buttonsContainer}
           titleStyle={styles.sectionTitle}
+          setCompressing={setCompressing}
         />
         <Uploads
           images={images}
-          video={videoPreview}
+          video={video}
           onRemoveImage={removeImageHandler}
           onRemoveVideo={removeVideoHandler}
           isLoading={isLoading}
         />
-        <VideoLengthChecker
-          videoFile={video[0]}
-          setLoading={setIsLoading}
-          setVideos={setVideo}
-          setPreview={setVideoPreview}
-        />
         <ErrorMessage errors={error} />
         <SubmitButton onPress={uploadFile} uploading={isUploading} />
       </View>
+      <ProgressModal progress={compressing} />
     </ScrollView>
   );
 }
