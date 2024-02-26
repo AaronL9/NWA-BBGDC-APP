@@ -66,7 +66,7 @@ export const launchVideoCamera = async (
         );
 
       let currentUri = uri;
-      if (metaData.size > 25) {
+      if (metaData.size > 2500) {
         const compressed = await Video.compress(
           result.assets[0].uri,
           {

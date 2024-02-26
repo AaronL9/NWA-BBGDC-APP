@@ -134,7 +134,6 @@ export default function Report() {
       setReports(initValue);
       setVideo([]);
       setImages([]);
-      setVideoPreview([]);
       setAddress("");
     } catch (error) {
       console.log("Error submitting your report: ", error);
