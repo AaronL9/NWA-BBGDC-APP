@@ -12,6 +12,7 @@ import firestore from "@react-native-firebase/firestore";
 import ProfileIconBtn from "../components/settings/ProfileIconBtn";
 import ProfileInfoBirthDate from "../components/settings/ProfileInfoBirthDate";
 import ProfileInfoAddress from "../components/settings/ProfileInfoAddress";
+import { getAge } from "../util/AgeCalculator";
 
 export default function Settings() {
   const { userData, setUserData } = useContext(AuthContext);
@@ -25,6 +26,8 @@ export default function Settings() {
     setIsEditing(false);
 
     try {
+      const age = getAge(data.birthdate);
+      if (!isNaN(age)) data.age = age;
       await firestore().collection("users").doc(userData.uid).update(data);
       setUserData(data);
       Alert.alert("Updated", "You have successfully updated your profile");
@@ -88,9 +91,9 @@ export default function Settings() {
         /> */}
         <ProfileInfoBirthDate
           label="BIRTHDATE"
-          currentValue={data.birthDate}
+          currentValue={data.birthdate}
           setData={setData}
-          propKey={"birthDate"}
+          propKey={"birthdate"}
           isEditing={isEditing}
         />
         <ProfileInfoAddress

@@ -19,7 +19,7 @@ export default function BirthDatePicker({ setCredentials }) {
       setDateValue(birthdate);
       setCredentials((prev) => ({
         ...prev,
-        birthDate: birthdate,
+        birthdate,
       }));
     }
   };

@@ -9,7 +9,7 @@ export const validateSignUpForm = (values, setErrors) => {
     errors.lastName = "Last Name is required";
   }
 
-  if (!values.birthDate.trim()) {
+  if (!values.birthdate.trim()) {
     errors.birthDate = "Birth Date is required";
   }
 
@@ -21,8 +21,13 @@ export const validateSignUpForm = (values, setErrors) => {
     errors.street = "Street is required";
   }
 
-  setErrors(errors);
-  return Object.keys(errors).length === 0;
+  if (Object.keys(errors).length === 0) {
+    setErrors(null);
+    return true;
+  } else {
+    setErrors(errors);
+    return false;
+  }
 };
 
 export function validatePhoneNumber(phoneNumber, setError) {

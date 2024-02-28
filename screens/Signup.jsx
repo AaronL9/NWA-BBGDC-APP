@@ -18,21 +18,23 @@ import Header from "../components/Header";
 import AddressField from "../components/auth/AddressField";
 import BirthDatePicker from "../components/auth/BirthDatePicker";
 import ErrorMessage from "../components/ErrorMessage";
+import { getAge } from "../util/AgeCalculator";
 
-export default function Signup({ route, navigation }) {
+export default function Signup({ route }) {
   const { setAuthenticating, setUserData } = useContext(AuthContext);
   const { uid, phoneNumber } = route.params;
 
   const [credential, setCredential] = useState(signUpInitValue);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState(null);
 
   const signUpHanlder = async () => {
     setErrors(null);
-    setAuthenticating(true);
     const isValid = validateSignUpForm(credential, setErrors);
     if (isValid) {
       try {
-        const userData = { uid, phoneNumber, ...credential };
+        setAuthenticating(true);
+        const age = getAge(credential.birthdate);
+        const userData = { uid, phoneNumber, age, ...credential };
         await firestore().collection("users").doc(uid).set(userData);
         setUserData(userData);
       } catch (error) {
@@ -60,7 +62,7 @@ export default function Signup({ route, navigation }) {
             <AddressField setCredentials={setCredential} />
             <BirthDatePicker setCredentials={setCredential} />
           </View>
-          <ErrorMessage errors={errors} />
+          {errors && <ErrorMessage errors={errors} />}
           <AuthButton title={"Continue"} onPress={signUpHanlder} />
         </View>
       </ScrollView>

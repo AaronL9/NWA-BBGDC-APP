@@ -187,7 +187,8 @@ export default function Report() {
             multiline={true}
             numberOfLines={8}
             editable
-            placeholder="Desciprtion (optional)"
+            placeholder="Desciprtion"
+            scrollEnabled
             onChangeText={onChangeHandler.bind(this, "description")}
           />
         </View>
@@ -283,6 +284,8 @@ const styles = StyleSheet.create({
   textarea: {
     // paddingBottom: 100,
     alignItems: "flex-start",
+    paddingTop: 0,
     textAlignVertical: "top",
+    height: 200,
   },
 });

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { formatDateToString } from "../../util/dateFormatter";
+import { parse } from "date-fns";
 
 export default function ProfileInfoBirthDate({
   label,
@@ -19,7 +20,7 @@ export default function ProfileInfoBirthDate({
       const birthdate = formatDateToString(selectedDate);
       setData((prev) => ({
         ...prev,
-        birthDate: birthdate,
+        birthdate,
       }));
     }
   };
@@ -38,7 +39,7 @@ export default function ProfileInfoBirthDate({
         </Text>
         {showDatePicker && (
           <DateTimePicker
-            value={new Date()}
+            value={parse(currentValue, "MMMM d, yyyy", new Date())}
             mode="date"
             display="default"
             onChange={onChangeDateHandler}

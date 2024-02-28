@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from "react";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
+import { updateAge } from "../util/AgeCalculator";
 
 export const AuthContext = createContext({
   currentUser: null,
@@ -41,7 +42,9 @@ function AuthContextProvider({ children }) {
             .doc(user.uid)
             .get();
           if (userData.exists) {
-            setUserData(userData.data());
+            const data = userData.data();
+            setUserData(data);
+            updateAge(data.birthdate, data.age, user.uid);
           } else {
             setUserData(null);
             const { uid, phoneNumber } = user;

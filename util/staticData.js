@@ -1,10 +1,14 @@
 export const offense = [
-  "Assualt",
+  "Noise Disturbance",
+  "Assualt / Rumble",
+  "Unpaid loans",
   "Robbery",
-  "Burglary and Break-Ins",
+  "Burglary / Namasok Bahay",
   "Sexual Harrasment",
   "Missing Person/s",
   "Vandalism and Property Damage",
   "Suspicious Persons or Vehicles",
+  "Concern",
+  "Complaints",
   "Others",
 ];
