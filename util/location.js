@@ -28,10 +28,6 @@ export async function getLocationHandler(setCoords, setAddress, setLoading) {
     return;
   }
 
-  const longerFetch = setTimeout(() => {
-    throw new Error("It taking longer than usual. Please try again");
-  }, 15000);
-
   setLoading(true);
   const location = await getCurrentPositionAsync();
   const lat = location.coords.latitude;
@@ -58,7 +54,6 @@ export async function getLocationHandler(setCoords, setAddress, setLoading) {
     }
 
     setAddress(String(address.join(", ")));
-    clearTimeout(longerFetch);
   } catch (error) {
     Alert.alert("Something went wrong", "sorry we can't get your location");
     console.log(error.message);

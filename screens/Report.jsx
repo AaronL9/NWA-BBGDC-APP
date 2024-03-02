@@ -71,17 +71,13 @@ export default function Report() {
       const urls = await Promise.all(
         media.map(async ({ uri }) => {
           const filename = extractFilename(uri);
-          const file = await fetch(uri);
-          const blob = await file.blob();
 
           const storageRef = storage().ref(
             `reports/${docId}/${type}/${filename}`
           );
-          await storageRef.put(blob);
+          await storageRef.putFile(uri);
 
-          // Ensure storageRef is properly created before getting downloadURL
           const downloadURL = await storageRef.getDownloadURL();
-          console.log(downloadURL);
           return downloadURL;
         })
       );
@@ -125,6 +121,16 @@ export default function Report() {
           imageURL,
           videoURL,
         });
+
+      fetch(
+        `https://${process.env.EXPO_PUBLIC_API_ENDPOINT}/api/push/alert-admins`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: userData.token,
+          },
+        }
+      );
 
       Alert.alert(
         "Report Submitted Successfully!",

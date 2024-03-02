@@ -2,7 +2,7 @@ export const signUpInitValue = {
   firstName: "",
   lastName: "",
   birthdate: "",
-  status: "active",
+  disabled: false,
   address: {
     houseNo: "",
     street: "",

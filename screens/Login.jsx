@@ -30,7 +30,6 @@ export default function Login() {
       const confirmation = await auth().signInWithPhoneNumber(
         formattedPhoneNumber
       );
-      console.log(JSON.stringify(confirmation, null, 2));
       setConfirm(confirmation);
     } catch (error) {
       console.log("Error sending code: ", error);

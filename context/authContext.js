@@ -43,6 +43,10 @@ function AuthContextProvider({ children }) {
             .get();
           if (userData.exists) {
             const data = userData.data();
+            if (data.disabled) logout();
+
+            const { token } = await user.getIdTokenResult();
+            data.token = token;
             setUserData(data);
             updateAge(data.birthdate, data.age, user.uid);
           } else {
@@ -58,7 +62,6 @@ function AuthContextProvider({ children }) {
         }
       }
 
-      console.log(user);
       setInitializing(false);
       setAuthenticating(false);
     });
