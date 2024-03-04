@@ -1,5 +1,11 @@
 import { formatDistanceToNow, format } from "date-fns";
 
+export function formatTimeAgo(timestamp) {
+  const formattedTimeAgo = formatDistanceToNow(timestamp, { addSuffix: true });
+
+  return formattedTimeAgo;
+}
+
 export const formatTimestamp = (timestamp) => {
   if (
     !timestamp ||

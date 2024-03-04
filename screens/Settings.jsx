@@ -13,6 +13,7 @@ import ProfileIconBtn from "../components/settings/ProfileIconBtn";
 import ProfileInfoBirthDate from "../components/settings/ProfileInfoBirthDate";
 import ProfileInfoAddress from "../components/settings/ProfileInfoAddress";
 import { getAge } from "../util/AgeCalculator";
+import ProfileInfoArea from "../components/settings/ProfileInfoArea";
 
 export default function Settings() {
   const { userData, setUserData } = useContext(AuthContext);
@@ -82,13 +83,6 @@ export default function Settings() {
           propKey={"lastName"}
           isEditing={isEditing}
         />
-        {/* <ProfileInfoEditor
-          label="CONTACT NO."
-          currentValue={data.contactNum}
-          setData={setData}
-          propKey={"contactNum"}
-          isEditing={isEditing}
-        /> */}
         <ProfileInfoBirthDate
           label="BIRTHDATE"
           currentValue={data.birthdate}
@@ -96,11 +90,19 @@ export default function Settings() {
           propKey={"birthdate"}
           isEditing={isEditing}
         />
-        <ProfileInfoAddress
-          currentValue={data.address}
-          isEditing={isEditing}
+        <ProfileInfoEditor
+          label="HOUSE ADDRESS"
+          currentValue={data.houseAddress}
           setData={setData}
-          label={"ADDRESS"}
+          propKey={"houseAddress"}
+          isEditing={isEditing}
+        />
+        <ProfileInfoArea
+          label="AREA"
+          currentValue={data.area}
+          setData={setData}
+          propKey={"area"}
+          isEditing={isEditing}
         />
       </View>
     </ScrollView>

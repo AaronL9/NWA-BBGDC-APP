@@ -13,12 +13,12 @@ export const validateSignUpForm = (values, setErrors) => {
     errors.birthDate = "Birth Date is required";
   }
 
-  if (!values.address || !values.address.houseNo.trim()) {
-    errors.houseNo = "House Number is required";
+  if (!values.houseAddress.trim()) {
+    errors.houseAddress = "House Address is required";
   }
 
-  if (!values.address || !values.address.street.trim()) {
-    errors.street = "Street is required";
+  if (!values.area.trim()) {
+    errors.area = "Area is required";
   }
 
   if (Object.keys(errors).length === 0) {

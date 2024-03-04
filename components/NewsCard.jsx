@@ -1,21 +1,20 @@
 import { Text, Image, View, StyleSheet, Pressable } from "react-native";
-import { formatTimestamp } from "../util/dateFormatter";
+import { formatTimeAgo } from "../util/dateFormatter";
 import { useNavigation } from "@react-navigation/native";
 
-export default function ArticleCard({ title, timestamp, body, imageUrl }) {
+export default function NewsCard({ docId, title, updatedAt, imageUrl }) {
   const navigation = useNavigation();
-  console.log(imageUrl);
   return (
     <>
       <Pressable
         style={{ marginVertical: 8 }}
-        onPress={() => navigation.navigate("ArticleView", { body })}
+        onPress={() => navigation.navigate("NewsView", { docId })}
       >
         <View>
           <Image style={styles.image} source={{ uri: imageUrl }} />
-          <View style={styles.articleTextContainer}>
-            <Text style={styles.articleTitle}>{title}</Text>
-            <Text>{formatTimestamp(timestamp)}</Text>
+          <View style={styles.newsTextContainer}>
+            <Text style={styles.newsTitle}>{title}</Text>
+            <Text>{formatTimeAgo(updatedAt)}</Text>
           </View>
         </View>
       </Pressable>
@@ -28,11 +27,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 250,
   },
-  articleTextContainer: {
+  newsTextContainer: {
     padding: 10,
     rowGap: 10,
   },
-  articleTitle: {
+  newsTitle: {
     fontSize: 20,
     fontWeight: "500",
   },

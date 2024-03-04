@@ -4,13 +4,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { MenuProvider } from "react-native-popup-menu";
 import { Colors } from "../constants/colors";
 
-import Articles from "../screens/articles/Articles";
-import ArticleView from "../screens/articles/ArticleView";
+import News from "../screens/news/News";
+import NewsView from "../screens/news/NewsView";
 import Report from "../screens/Report";
 import Settings from "../screens/Settings";
 import InfoDesk from "../screens/info_desk/InfoDesk";
 import MenuBtn from "../components/Menu";
-import { Image, View } from "react-native";
+import { Image } from "react-native";
 import Map from "../screens/Map";
 
 const Tab = createBottomTabNavigator();
@@ -51,8 +51,8 @@ const BottomNavigator = () => {
           }}
         />
         <Tab.Screen
-          name="Articles"
-          component={Articles}
+          name="News"
+          component={News}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="article" size={size} color={color} />
@@ -61,7 +61,7 @@ const BottomNavigator = () => {
           }}
         />
         <Tab.Screen
-          name="InfoDesk"
+          name="Hotlines"
           component={InfoDesk}
           options={{
             tabBarIcon: ({ color, size }) => (
@@ -90,7 +90,7 @@ const Home = () => {
       />
       <Stack.Screen name="Map" component={Map} />
       <Stack.Screen name="Settings" component={Settings} />
-      <Stack.Screen name="ArticleView" component={ArticleView} />
+      <Stack.Screen name="NewsView" component={NewsView} />
     </Stack.Navigator>
   );
 };

@@ -2,11 +2,9 @@ export const signUpInitValue = {
   firstName: "",
   lastName: "",
   birthdate: "",
+  houseAddress: "",
+  area: "",
   disabled: false,
-  address: {
-    houseNo: "",
-    street: "",
-  },
 };
 
 export const credentialFieldProps = (setCredential) => {

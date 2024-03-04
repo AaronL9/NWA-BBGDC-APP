@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import {
   Text,
   TextInput,
@@ -38,6 +38,7 @@ export default function Report() {
   const { userData } = useContext(AuthContext);
 
   const route = useRoute();
+  const reportSelectRef = useRef(null);
   const isFocused = useIsFocused();
 
   const initValue = {
@@ -141,6 +142,9 @@ export default function Report() {
       setVideo([]);
       setImages([]);
       setAddress("");
+      if (reportSelectRef) {
+        reportSelectRef.current.reset();
+      }
     } catch (error) {
       console.log("Error submitting your report: ", error);
       Alert.alert("Something went wrong", error.message);
@@ -168,6 +172,7 @@ export default function Report() {
         <Text style={styles.sectionTitle}>REPORT DETAILS</Text>
         <View style={styles.inputContainer}>
           <SelectDropdown
+            ref={reportSelectRef}
             data={offense}
             buttonStyle={[styles.inputStyle, styles.dropdownStyle]}
             renderDropdownIcon={() => (
