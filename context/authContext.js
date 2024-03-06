@@ -47,6 +47,7 @@ function AuthContextProvider({ children }) {
 
             const { token } = await user.getIdTokenResult();
             data.token = token;
+
             setUserData(data);
             updateAge(data.birthdate, data.age, user.uid);
           } else {

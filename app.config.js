@@ -1,8 +1,8 @@
 module.exports = {
   expo: {
-    name: "client",
+    name: "Neighborhood Watch",
     slug: "client",
-    version: "1.0.2",
+    version: "1.1.2",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
@@ -40,6 +40,7 @@ module.exports = {
     plugins: [
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
+      ["expo-notifications"],
       [
         "expo-image-picker",
         {
