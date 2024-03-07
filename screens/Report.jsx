@@ -33,9 +33,10 @@ import { getLocationAddress } from "../util/location";
 import { validateReportForm } from "../util/report";
 import ErrorMessage from "../components/ErrorMessage";
 import ProgressModal from "../components/ProgressModal";
+import { uuidv4 } from "react-native-compressor";
 
 export default function Report() {
-  const { userData, token } = useContext(AuthContext);
+  const { userData, userToken } = useContext(AuthContext);
 
   const route = useRoute();
   const reportSelectRef = useRef(null);
@@ -67,15 +68,11 @@ export default function Report() {
     setVideo((prev) => prev.filter((_, index) => index !== indexId));
   };
 
-  const uploadMedia = async (docId, media, type) => {
+  const uploadMedia = async (docId, media) => {
     try {
       const urls = await Promise.all(
-        media.map(async ({ uri }) => {
-          const filename = extractFilename(uri);
-
-          const storageRef = storage().ref(
-            `reports/${docId}/${type}/${filename}`
-          );
+        media.map(async ({ uri }, index) => {
+          const storageRef = storage().ref(`reports/${docId}/${index}`);
           await storageRef.putFile(uri);
 
           const downloadURL = await storageRef.getDownloadURL();
@@ -108,12 +105,15 @@ export default function Report() {
         throw Error("Please fill out the required fields");
       }
 
-      const imageURL = await uploadMedia(userData.uid, images, "images");
-      const videoURL = await uploadMedia(userData.uid, video, "videos");
+      const uuid = uuidv4();
+
+      const imageURL = await uploadMedia(uuid, images);
+      const videoURL = await uploadMedia(uuid, video);
 
       await firestore()
         .collection("reports")
-        .add({
+        .doc(uuid)
+        .set({
           ...reports,
           date: formatDateToString(new Date()),
           timestamp: new Date().getTime(),
@@ -128,7 +128,7 @@ export default function Report() {
         {
           method: "GET",
           headers: {
-            Authorization: token,
+            Authorization: userToken,
           },
         }
       );
