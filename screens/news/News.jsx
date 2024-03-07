@@ -24,6 +24,7 @@ export default function News() {
         setLoading(true);
         const subscriber = firestore()
           .collection("news")
+          .orderBy("updatedAt", "desc")
           .onSnapshot((querySnapshot) => {
             const data = querySnapshot.docs.map((doc) => {
               const id = doc.id;

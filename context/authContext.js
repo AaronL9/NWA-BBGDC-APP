@@ -15,6 +15,7 @@ export const AuthContext = createContext({
   authenticating: false,
   setAuthenticating: () => {},
   authError: null,
+  token: "",
 });
 
 function AuthContextProvider({ children }) {
@@ -23,6 +24,7 @@ function AuthContextProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [authenticating, setAuthenticating] = useState(false);
+  const [userToken, setUserToken] = useState(null);
 
   async function logout() {
     try {
@@ -37,16 +39,17 @@ function AuthContextProvider({ children }) {
       setCurrentUser(user);
       if (user) {
         try {
+          const { token } = await user.getIdTokenResult();
+          setUserToken(token);
+
           const userData = await firestore()
             .collection("users")
             .doc(user.uid)
             .get();
+
           if (userData.exists) {
             const data = userData.data();
             if (data.disabled) logout();
-
-            const { token } = await user.getIdTokenResult();
-            data.token = token;
 
             setUserData(data);
             updateAge(data.birthdate, data.age, user.uid);
@@ -73,6 +76,7 @@ function AuthContextProvider({ children }) {
   const value = {
     currentUser,
     userData,
+    userToken,
     setUserData,
     logout,
     authenticating,

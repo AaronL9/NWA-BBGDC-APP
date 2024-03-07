@@ -4,6 +4,7 @@ import {
   View,
   ActivityIndicator,
   ScrollView,
+  Text,
 } from "react-native";
 import ProfileInfoEditor from "../components/settings/ProfileInfoEditor";
 import { useContext, useState } from "react";
@@ -11,9 +12,11 @@ import { AuthContext } from "../context/authContext";
 import firestore from "@react-native-firebase/firestore";
 import ProfileIconBtn from "../components/settings/ProfileIconBtn";
 import ProfileInfoBirthDate from "../components/settings/ProfileInfoBirthDate";
-import ProfileInfoAddress from "../components/settings/ProfileInfoAddress";
 import { getAge } from "../util/AgeCalculator";
 import ProfileInfoArea from "../components/settings/ProfileInfoArea";
+import AboutUs from "../components/settings/AboutUs";
+import PrivacyPolicy from "../components/settings/PrivacyPolicy";
+import { trimStringValues } from "../util/stringFormatter";
 
 export default function Settings() {
   const { userData, setUserData } = useContext(AuthContext);
@@ -27,8 +30,11 @@ export default function Settings() {
     setIsEditing(false);
 
     try {
+      trimStringValues(data);
+
       const age = getAge(data.birthdate);
       if (!isNaN(age)) data.age = age;
+
       await firestore().collection("users").doc(userData.uid).update(data);
       setUserData(data);
       Alert.alert("Updated", "You have successfully updated your profile");
@@ -49,8 +55,11 @@ export default function Settings() {
   };
 
   return (
-    <ScrollView>
+    <ScrollView style={{ paddingBottom: 12 }}>
       <View style={styles.settingsContainer}>
+        <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+          PERSONAL INFORMATION
+        </Text>
         <View style={{ alignItems: "flex-end" }}>
           {loading ? (
             <ActivityIndicator color="black" size="small" />
@@ -105,6 +114,9 @@ export default function Settings() {
           isEditing={isEditing}
         />
       </View>
+      <View style={styles.divider}></View>
+      <PrivacyPolicy />
+      <AboutUs />
     </ScrollView>
   );
 }
@@ -116,5 +128,12 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     paddingVertical: 18,
     gap: 12,
+  },
+  divider: {
+    width: "80%",
+    borderWidth: 0.3,
+    alignSelf: "center",
+    marginVertical: 24,
+    opacity: 0.5,
   },
 });

@@ -15,6 +15,9 @@ import InfoDesk from "../screens/info_desk/InfoDesk";
 import MenuBtn from "../components/Menu";
 import { Image } from "react-native";
 import Map from "../screens/Map";
+import { useContext, useEffect } from "react";
+import firestore from "@react-native-firebase/firestore";
+import { AuthContext } from "../context/authContext";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -22,8 +25,8 @@ const Stack = createNativeStackNavigator();
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
   }),
 });
 
@@ -78,7 +81,7 @@ const BottomNavigator = () => {
           headerRight: () => <MenuBtn />,
           headerLeft: () => (
             <Image
-              source={require("../assets/logo.png")}
+              source={require("../assets/icon.png")}
               style={{ width: 35, height: 35, marginLeft: 14 }}
             />
           ),
@@ -121,6 +124,32 @@ const BottomNavigator = () => {
 };
 
 export default function Home() {
+  const { userData } = useContext(AuthContext);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      firestore()
+        .collection("user_push_token")
+        .doc(userData.uid)
+        .set({ token }, { merge: true });
+    });
+
+    const subscription1 = Notifications.addNotificationReceivedListener(() => {
+      console.log("NOTIFICATION RECEIVED HANDLED");
+    });
+
+    const subscription2 = Notifications.addNotificationResponseReceivedListener(
+      () => {
+        console.log("NOTIFICATION RESPONSE HANLDED");
+      }
+    );
+
+    return () => {
+      subscription1.remove();
+      subscription2.remove();
+    };
+  }, []);
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -135,7 +164,11 @@ export default function Home() {
       />
       <Stack.Screen name="Map" component={Map} />
       <Stack.Screen name="Settings" component={Settings} />
-      <Stack.Screen name="NewsView" component={NewsView} />
+      <Stack.Screen
+        name="NewsView"
+        component={NewsView}
+        options={{ headerTitle: "" }}
+      />
     </Stack.Navigator>
   );
 }

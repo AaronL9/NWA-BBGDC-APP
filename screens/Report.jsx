@@ -35,7 +35,7 @@ import ErrorMessage from "../components/ErrorMessage";
 import ProgressModal from "../components/ProgressModal";
 
 export default function Report() {
-  const { userData } = useContext(AuthContext);
+  const { userData, token } = useContext(AuthContext);
 
   const route = useRoute();
   const reportSelectRef = useRef(null);
@@ -101,7 +101,7 @@ export default function Report() {
 
   const uploadFile = async () => {
     setIsUploading(true);
-    console.log(reports);
+
     const isValid = validateReportForm({ ...reports, address }, setError);
     try {
       if (!isValid) {
@@ -128,7 +128,7 @@ export default function Report() {
         {
           method: "GET",
           headers: {
-            Authorization: userData.token,
+            Authorization: token,
           },
         }
       );
@@ -198,7 +198,7 @@ export default function Report() {
             multiline={true}
             numberOfLines={8}
             editable
-            placeholder="Desciprtion"
+            placeholder="Details (e.g. time, location, and relevant information)"
             scrollEnabled
             onChangeText={onChangeHandler.bind(this, "description")}
           />

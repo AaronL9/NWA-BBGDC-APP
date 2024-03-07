@@ -31,20 +31,16 @@ export const validateSignUpForm = (values, setErrors) => {
 };
 
 export function validatePhoneNumber(phoneNumber, setError) {
-  const cleanedNumber = phoneNumber.trim();
+  const input = phoneNumber.trim();
 
-  // Check if there are any characters aside from numbers
-  if (/[^0-9+]/.test(cleanedNumber)) {
-    setError("Invalid phone number");
-    return null;
+  if (/^\+639\d{9}$/.test(input) && input.length === 13) {
+    return input;
   }
 
-  if (cleanedNumber.startsWith("+63") && cleanedNumber.length === 13) {
-    return cleanedNumber;
-  } else if (cleanedNumber.startsWith("09") && cleanedNumber.length === 11) {
-    return "+63" + cleanedNumber.slice(1);
-  } else {
-    setError("Invalid phone number");
-    return null;
+  if (/^09\d{9}$/.test(input) && input.length === 11) {
+    return "+63" + input.slice(1);
   }
+
+  setError("Invalid phone number");
+  return null;
 }

@@ -1,8 +1,16 @@
 export function limitStringLength(inputString, maxLength) {
-  if (inputString.length <= maxLength) {
-    return inputString;
+  if (inputString.length > maxLength) {
+    let trimmedString = inputString.substring(0, maxLength);
+
+    while (/\s$/.test(trimmedString)) {
+      trimmedString = trimmedString.substring(0, trimmedString.length - 1);
+    }
+
+    trimmedString += "...";
+
+    return trimmedString;
   } else {
-    return inputString.substring(0, maxLength - 3) + "...";
+    return inputString;
   }
 }
 
@@ -21,3 +29,11 @@ export const extractErrorMessage = (errorCode) => {
 
   return formattedMessage;
 };
+
+export function trimStringValues(obj) {
+  for (const prop in obj) {
+    if (typeof obj[prop] === "string") {
+      obj[prop] = obj[prop].trim();
+    }
+  }
+}

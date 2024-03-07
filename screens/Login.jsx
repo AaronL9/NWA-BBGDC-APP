@@ -1,4 +1,11 @@
-import { View, StyleSheet, StatusBar, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  StatusBar,
+  ScrollView,
+  TouchableOpacity,
+  Text,
+} from "react-native";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/authContext";
 import { Colors } from "../constants/colors";
@@ -11,14 +18,16 @@ import ErrorLoginMessage from "../components/auth/ErrorLoginMessage";
 import SignInField from "../components/auth/PhoneNumberField";
 import { validatePhoneNumber } from "../util/formValidation";
 import { extractErrorMessage } from "../util/stringFormatter";
+import ResendCode from "../components/auth/ResendCode";
 
 export default function Login() {
-  const { setAuthenticating } = useContext(AuthContext);
+  const { setAuthenticating, authenticating } = useContext(AuthContext);
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [code, setCode] = useState("");
   const [confirm, setConfirm] = useState(null);
   const [error, setError] = useState(null);
+  const [showChangeNumber, setShowChangeNumber] = useState(null);
 
   const sendCodeHandler = async () => {
     setError(null);
@@ -30,7 +39,9 @@ export default function Login() {
       const confirmation = await auth().signInWithPhoneNumber(
         formattedPhoneNumber
       );
+
       setConfirm(confirmation);
+      setShowChangeNumber(false);
     } catch (error) {
       console.log("Error sending code: ", error);
       setError(extractErrorMessage(error.code));
@@ -80,8 +91,33 @@ export default function Login() {
                   placeholder="Code"
                 />
               </View>
+
               {error && <ErrorLoginMessage message={error} />}
               <AuthButton title={"Confirm"} onPress={confirmCode} />
+              {!authenticating && (
+                <View
+                  style={{
+                    flex: 1,
+                    width: "100%",
+                    flexDirection: "row",
+                    justifyContent: showChangeNumber
+                      ? "space-between"
+                      : "flex-end",
+                  }}
+                >
+                  {showChangeNumber && (
+                    <TouchableOpacity onPress={() => setConfirm(null)}>
+                      <Text style={{ color: "white", fontSize: 12 }}>
+                        Change Phone Number?
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  <ResendCode
+                    sendCodeHanlder={sendCodeHandler}
+                    setShowOption={setShowChangeNumber}
+                  />
+                </View>
+              )}
             </>
           )}
         </View>

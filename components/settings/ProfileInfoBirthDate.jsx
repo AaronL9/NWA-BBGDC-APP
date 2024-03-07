@@ -25,7 +25,7 @@ export default function ProfileInfoBirthDate({
     }
   };
 
-  const disabledStyle = isEditing ? "white" : "#888888";
+  const disabledStyle = isEditing ? "black" : "#888888";
 
   return (
     <View style={styles.container}>
@@ -54,11 +54,11 @@ const styles = StyleSheet.create({
   container: {
     gap: 6,
   },
-  label: { fontWeight: "bold" },
+  label: { fontWeight: "500", textTransform: "capitalize" },
   textInput: {
     height: 40,
     fontSize: 16,
-    backgroundColor: "#303134",
+    backgroundColor: "#fff",
     color: "white",
     paddingHorizontal: 4,
     borderRadius: 4,

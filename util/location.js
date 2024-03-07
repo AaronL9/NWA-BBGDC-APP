@@ -6,11 +6,11 @@ import {
 
 async function verifyPermissions() {
   const { status } = await requestForegroundPermissionsAsync();
-  console.log(status);
+
   if (status === "denied") {
     Alert.alert(
       "Insufficient Permissions!",
-      "You need to grant location permissions to use this app.",
+      "You need to grant location permissions to use this feature.",
       [
         { text: "cancel" },
         { text: "Go to settings", onPress: () => Linking.openSettings() },
@@ -70,7 +70,6 @@ export async function getLocationAddress(coords, setAddress) {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&location_type=ROOFTOP&key=${process.env.EXPO_PUBLIC_API_KEY}`;
     const response = await fetch(url);
     const data = await response.json();
-    console.log(JSON.stringify(data, null, 2));
 
     if (!response.ok) {
       throw new Error("Failed to fetch Address!");
