@@ -2,7 +2,7 @@ module.exports = {
   expo: {
     name: "Neighborhood Watch",
     slug: "client",
-    version: "1.1.2",
+    version: "1.1.3",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
