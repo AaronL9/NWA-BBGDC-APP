@@ -19,10 +19,6 @@ import firestore from "@react-native-firebase/firestore";
 // navigation
 import { useRoute, useIsFocused } from "@react-navigation/native";
 
-// util
-import { offense } from "../util/staticData";
-import { extractFilename } from "../util/stringFormatter";
-
 // components
 import Uploads from "../components/report/Uploads";
 import SubmitButton from "../components/report/SubmitButton";
@@ -40,15 +36,18 @@ export default function Report() {
 
   const route = useRoute();
   const reportSelectRef = useRef(null);
+  const areaSelectRef = useRef(null);
   const isFocused = useIsFocused();
 
   const initValue = {
     reporteeName: `${userData.firstName} ${userData.lastName}`,
     status: "report",
     offense: "",
+    area: "",
     description: "",
   };
 
+  const [offense, setOffense] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [compressing, setCompressing] = useState(false);
@@ -166,32 +165,54 @@ export default function Report() {
     fetchLocationAddress();
   }, [route, isFocused]);
 
+  useEffect(() => {
+    const getOffenses = async () => {
+      const result = await firestore()
+        .collection("static_data")
+        .doc("offense")
+        .get();
+
+      const options = result.data().options;
+      setOffense(options);
+    };
+    getOffenses();
+  }, []);
+
   return (
     <ScrollView style={styles.scrollContainer}>
       <View style={styles.reportContainer}>
         <Text style={styles.sectionTitle}>REPORT DETAILS</Text>
         <View style={styles.inputContainer}>
-          <SelectDropdown
-            ref={reportSelectRef}
-            data={offense}
-            buttonStyle={[styles.inputStyle, styles.dropdownStyle]}
-            renderDropdownIcon={() => (
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="black"
-              />
-            )}
-            onSelect={(selectedItem) =>
-              onChangeHandler("offense", selectedItem)
-            }
-            defaultButtonText="Select an offense"
-            dropdownStyle={{ borderRadius: 4, padding: 8 }}
-            rowStyle={{ borderColor: "transparent" }}
-            rowTextStyle={{ borderWidth: 0, textAlign: "left" }}
-            selectedRowTextStyle={{ color: Colors.primary200 }}
-            selectedRowStyle={{ backgroundColor: "white", borderRadius: 6 }}
-          />
+          {!!offense.length && (
+            <SelectDropdown
+              ref={reportSelectRef}
+              data={offense}
+              buttonStyle={[styles.inputStyle]}
+              renderDropdownIcon={() => (
+                <MaterialIcons
+                  name="keyboard-arrow-down"
+                  size={24}
+                  color="black"
+                />
+              )}
+              onSelect={(selectedItem) =>
+                onChangeHandler("offense", selectedItem)
+              }
+              defaultButtonText="Select an offense"
+              dropdownStyle={{ borderRadius: 4, padding: 8 }}
+              buttonTextStyle={{ textTransform: "lowercase" }}
+              rowStyle={{ borderColor: "transparent" }}
+              rowTextStyle={{
+                borderWidth: 0,
+                textAlign: "left",
+                textTransform: "capitalize",
+              }}
+              selectedRowTextStyle={{
+                color: Colors.primary200,
+              }}
+              selectedRowStyle={{ backgroundColor: "white", borderRadius: 6 }}
+            />
+          )}
           <TextInput
             value={reports.description}
             style={[styles.inputStyle, styles.textarea]}
@@ -209,6 +230,8 @@ export default function Report() {
           address={address}
           coords={coords}
           titleStyle={styles.sectionTitle}
+          areaSelectRef={areaSelectRef}
+          onChangeHandler={onChangeHandler}
         />
         <MediaPicker
           setImages={setImages}

@@ -1,19 +1,3 @@
-export const offense = [
-  "Robbery",
-  "Noise Disturbance",
-  "Brawl / awayan",
-  "Sexual Harrasment",
-  "Missing Person/s",
-  "Unpaid loans",
-  "Concern",
-  "Complaints",
-  "Vandalism and Property Damage",
-  "Suspicious Persons or Vehicles",
-  "Burglary / Namasok Bahay",
-  "Vehicle Collision",
-  "Others",
-];
-
 export const bonuanArea = [
   "Alimango",
   "Alimasag",
